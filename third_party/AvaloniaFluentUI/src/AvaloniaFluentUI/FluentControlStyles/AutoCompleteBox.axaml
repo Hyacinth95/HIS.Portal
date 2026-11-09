@@ -1,0 +1,84 @@
+<ResourceDictionary
+  x:CompileBindings="True"
+  xmlns="https://github.com/avaloniaui"
+  xmlns:ui="clr-namespace:AvaloniaFluentUI.Controls"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Design.PreviewWith>
+    <Border Padding="50">
+      <StackPanel Orientation="Vertical" Spacing="5">
+        <AutoCompleteBox Width="100" />
+      </StackPanel>
+    </Border>
+  </Design.PreviewWith>
+
+  <Thickness x:Key="AutoSuggestBoxTopHeaderMargin">0,0,0,8</Thickness>
+  <Thickness x:Key="AutoSuggestBoxInnerButtonMargin">1,3</Thickness>
+  <Thickness x:Key="AutoSuggestBoxDeleteButtonMargin">0,4</Thickness>
+  <!--  Taken from generic.xaml  -->
+  <Thickness x:Key="AutoSuggestListMargin">0 2</Thickness>
+  <x:Double x:Key="AutoSuggestListMaxHeight">374</x:Double>
+  <Thickness x:Key="AutoSuggestListPadding">2</Thickness>
+
+  <ControlTheme TargetType="AutoCompleteBox" x:Key="{x:Type AutoCompleteBox}">
+    <Setter Property="VerticalAlignment" Value="Top" />
+    <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+    <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
+    <Setter Property="BorderThickness" Value="{DynamicResource TextControlBorderThemeThickness}" />
+    <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
+    <Setter Property="Padding" Value="{DynamicResource TextControlThemePadding}" />
+    <Setter Property="MaxDropDownHeight" Value="{DynamicResource AutoCompleteListMaxHeight}" />
+    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Grid Name="PART_LayoutRoot">
+          <TextBox
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CaretIndex="{TemplateBinding CaretIndex,
+                                         Mode=TwoWay}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            DataValidationErrors.Errors="{TemplateBinding (DataValidationErrors.Errors)}"
+            FontFamily="{TemplateBinding FontFamily}"
+            FontSize="{TemplateBinding FontSize}"
+            FontWeight="{TemplateBinding FontWeight}"
+            Foreground="{TemplateBinding Foreground}"
+            InnerLeftContent="{TemplateBinding InnerLeftContent}"
+            InnerRightContent="{TemplateBinding InnerRightContent}"
+            Margin="0"
+            MaxLength="{TemplateBinding MaxLength}"
+            Name="PART_TextBox"
+            Padding="{TemplateBinding Padding}"
+            PlaceholderText="{TemplateBinding Watermark}"
+            Width="{TemplateBinding Width}" />
+
+          <ui:FluentPopup
+            IsLightDismissEnabled="True"
+            MaxHeight="{TemplateBinding MaxDropDownHeight}"
+            MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource AddConverter}, ConverterParameter=12}"
+            Name="PART_Popup"
+            PlacementTarget="{TemplateBinding}"
+            WindowManagerAddShadowHint="False">
+            <Border
+              Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+              BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+              BorderThickness="1"
+              BoxShadow="{DynamicResource ControlDefaultBoxShadow}"
+              CornerRadius="{DynamicResource OverlayCornerRadius}"
+              Margin="{DynamicResource ControlDefaultBoxShadowsMargin}"
+              Name="PART_SuggestionsContainer"
+              Padding="{DynamicResource AutoSuggestListMargin}">
+              <ListBox
+                Background="Transparent"
+                BorderThickness="0"
+                ItemTemplate="{TemplateBinding ItemTemplate}"
+                Margin="{DynamicResource AutoSuggestListPadding}"
+                Name="PART_SelectingItemsControl" />
+            </Border>
+          </ui:FluentPopup>
+        </Grid>
+      </ControlTemplate>
+    </Setter>
+  </ControlTheme>
+</ResourceDictionary>

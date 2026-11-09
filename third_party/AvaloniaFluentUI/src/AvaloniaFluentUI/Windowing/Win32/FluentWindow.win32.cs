@@ -1,0 +1,32 @@
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using AvaloniaFluentUI.Controls.Interop;
+using AvaloniaFluentUI.Helpers;
+
+namespace AvaloniaFluentUI.Windowing;
+
+public partial class FluentWindow
+{
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void InitializeWindowPlatform()
+    {
+#if DEBUG
+        Debug.WriteLine("Is Window Platform");
+#endif
+        IsWindows = true;
+        IsWindows11 = OSVersionHelper.IsWindows11();
+
+        _win32Manager = new Win32WindowManager(this);
+
+        Win32Interop.ApplyTheme(_win32Manager.Hwnd, true);
+        PlatformFeatures = new Win32FluentWindowFeatures(this);
+
+        if (!IsWindows11)
+        {
+            PseudoClasses.Add(":is-windows-10");
+            _win32Manager.EnableNonClientRenderingWorkaround();
+        }
+    }
+
+    private Win32WindowManager _win32Manager;
+}

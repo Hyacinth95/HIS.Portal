@@ -1,0 +1,239 @@
+<UserControl
+    x:Class="HIS.Portal.Modules.WebDemo.WebDemoView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:HIS.Portal.Modules.WebDemo"
+    xmlns:webview="using:Avalonia.Controls"
+    x:DataType="vm:WebDemoViewModel"
+    Background="Transparent">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+    <Border
+        Grid.Row="0"
+        Padding="22,14,22,13"
+        Background="White"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="4">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Classes="H1" Text="检查申请" />
+            <Border Padding="8,3" Background="#E9F7F1" CornerRadius="10">
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="NativeWebView" />
+            </Border>
+            <Border Padding="8,3" Background="#EAF4FD" CornerRadius="10">
+              <TextBlock FontSize="11" Foreground="#0F6CBD" Text="本地 HTML" />
+            </Border>
+          </StackPanel>
+          <TextBlock Classes="Muted" Text="官方浏览器控件加载随应用提供的本地页面；不连接外部业务系统。" TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="9">
+          <Border Padding="8,4" Background="#E9F7F1" CornerRadius="10">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <Ellipse
+                  Width="6"
+                  Height="6"
+                  VerticalAlignment="Center"
+                  Fill="#12B76A" />
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="{Binding AdapterState}" />
+            </StackPanel>
+          </Border>
+          <Button
+              x:Name="DiagnosticsToggleButton"
+              AutomationProperties.AutomationId="DiagnosticsToggleButton"
+              AutomationProperties.Name="展开或收起 WebView 诊断面板"
+              Click="OnToggleDiagnostics"
+              Classes="SecondaryButton"
+              ToolTip.Tip="展开或收起 WebView 诊断面板">
+            <StackPanel Orientation="Horizontal" Spacing="5">
+              <PathIcon
+                  Width="13"
+                  Height="13"
+                  Data="{StaticResource IconList}"
+                  Foreground="#475467" />
+              <TextBlock x:Name="DiagnosticsToggleText" Text="展开诊断" />
+            </StackPanel>
+          </Button>
+          <Button Command="{Binding ReloadCommand}" Classes="SecondaryButton">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <PathIcon
+                  Width="14"
+                  Height="14"
+                  Data="{StaticResource IconRefresh}"
+                  Foreground="#475467" />
+              <TextBlock Text="重新加载" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border
+        Grid.Row="1"
+        Padding="22,8"
+        Background="#FBFCFE"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,0,0,1">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <PathIcon
+            Width="13"
+            Height="13"
+            VerticalAlignment="Center"
+            Data="{StaticResource IconInfo}"
+            Foreground="#0F6CBD" />
+        <TextBlock
+            VerticalAlignment="Center"
+            FontSize="11"
+            Foreground="#475467"
+            Text="验证点：在下方输入备注、点击“增加一次”，再切换到其它业务标签并返回；输入、计数和 JS 会话 ID 均应保留。" />
+        <TextBlock
+            VerticalAlignment="Center"
+            FontSize="11"
+            Foreground="#667085"
+            Text="{Binding DomState}" />
+      </StackPanel>
+    </Border>
+
+    <Grid
+        x:Name="WebBodyGrid"
+        Grid.Row="2"
+        Margin="22,16,22,18"
+        ColumnDefinitions="0,*"
+        ColumnSpacing="0">
+      <ScrollViewer
+          x:Name="DiagnosticsScroll"
+          Grid.Column="0"
+          HorizontalScrollBarVisibility="Disabled"
+          IsVisible="False"
+          VerticalScrollBarVisibility="Auto">
+        <StackPanel x:Name="DiagnosticsPanel" IsVisible="False" Spacing="14">
+        <Border Padding="17" Classes="Card">
+          <StackPanel Spacing="11">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Classes="H2" Text="WebView 状态" />
+              <Border
+                  Grid.Column="1"
+                  Padding="7,2"
+                  Background="#EAF4FD"
+                  CornerRadius="9">
+                <TextBlock FontSize="11" Foreground="#0F6CBD" Text="实时" />
+              </Border>
+            </Grid>
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+              <Ellipse
+                  Width="8"
+                  Height="8"
+                  Margin="0,5,0,0"
+                  VerticalAlignment="Top"
+                  Fill="#12B76A" />
+              <StackPanel Grid.Column="1" Spacing="2">
+                <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding AdapterState}" />
+                <TextBlock
+                    FontSize="11"
+                    Foreground="#667085"
+                    Text="{Binding AdapterDetail}"
+                    TextWrapping="Wrap" />
+              </StackPanel>
+            </Grid>
+            <Border Height="1" Background="#EDF0F4" />
+            <StackPanel Spacing="6">
+              <TextBlock Classes="FieldLabel" Text="验证步骤" />
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                <TextBlock Classes="Symbol" FontSize="11" Foreground="#0F6CBD" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="在 Web 页输入临床备注" TextWrapping="Wrap" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                <TextBlock Classes="Symbol" FontSize="11" Foreground="#0F6CBD" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="点击计数按钮，记录当前数字" TextWrapping="Wrap" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                <TextBlock Classes="Symbol" FontSize="11" Foreground="#0F6CBD" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="切换标签或关闭取消后返回" TextWrapping="Wrap" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                <TextBlock Classes="Symbol" FontSize="11" Foreground="#0F6CBD" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="核对输入、计数和会话 ID 不变" TextWrapping="Wrap" />
+              </Grid>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <Border Padding="15" Classes="SoftPanel">
+          <StackPanel Spacing="7">
+            <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#475467" Text="生命周期约定" />
+            <TextBlock
+                FontSize="11"
+                Foreground="#667085"
+                Text="WebView 实例只属于本页面。切换标签只隐藏页面，不替换或重建控件；关闭标签后页面从视觉树移除，原生适配器随之销毁。"
+                TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+
+        <Border Padding="15" Background="#FFF9ED" CornerRadius="7">
+          <StackPanel Spacing="6">
+            <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#8A4B08" Text="缺失 WebView2 时" />
+            <TextBlock
+                FontSize="11"
+                Foreground="#9A5B13"
+                Text="本标签内会显示明确错误信息；首页、接诊列表与详情等原生页面仍可使用。"
+                TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+      </ScrollViewer>
+
+      <Border Grid.Column="1" Classes="Card" ClipToBounds="True">
+        <Grid>
+          <webview:NativeWebView
+              x:Name="WebView"
+              Background="White" />
+          <Border
+              Padding="34"
+              Background="#F8FAFC"
+              IsVisible="{Binding IsUnavailable}">
+            <StackPanel
+                Width="400"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="10">
+              <Border
+                  Width="44"
+                  Height="44"
+                  HorizontalAlignment="Center"
+                  Background="#FEF3F2"
+                  CornerRadius="22">
+                <PathIcon
+                    Width="20"
+                    Height="20"
+                    Data="{StaticResource IconInfo}"
+                    Foreground="#B42318" />
+              </Border>
+              <TextBlock
+                  HorizontalAlignment="Center"
+                  FontSize="16"
+                  FontWeight="SemiBold"
+                  Text="WebView2 不可用" />
+              <TextBlock
+                  HorizontalAlignment="Center"
+                  FontSize="11"
+                  Foreground="#667085"
+                  Text="{Binding AdapterDetail}"
+                  TextWrapping="Wrap" />
+              <Border Padding="12" Background="#FFFFFF" BorderBrush="#E3E8EF" BorderThickness="1" CornerRadius="6">
+                <TextBlock
+                    FontSize="11"
+                    Foreground="#667085"
+                    Text="原生页面不依赖 WebView，仍可正常使用。请安装 Microsoft Edge WebView2 Runtime 后重新打开本标签。"
+                    TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+    </Grid>
+  </Grid>
+</UserControl>

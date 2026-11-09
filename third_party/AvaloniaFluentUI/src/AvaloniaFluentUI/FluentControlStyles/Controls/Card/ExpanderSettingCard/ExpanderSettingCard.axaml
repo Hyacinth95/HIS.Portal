@@ -1,0 +1,253 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ui="using:AvaloniaFluentUI.Controls">
+  <Design.PreviewWith>
+    <Border
+      Width="700"
+      Height="350"
+      Padding="20">
+      <ui:ExpanderSettingCard Header="Test">
+        <ui:ExpanderSettingCardItem Content="Item1"/>
+        <ui:ExpanderSettingCardItem Content="Item2"/>
+        <ui:ExpanderSettingCardItem Content="Item3"/>
+      </ui:ExpanderSettingCard>
+    </Border>
+  </Design.PreviewWith>
+
+  <Thickness x:Key="ExpanderSettingCardPadding">0 16 16 16</Thickness>
+  <x:Double x:Key="ExpanderSettingCardMinHeight">68</x:Double>
+  <Thickness x:Key="ExpanderSettingCardExpandCollapseChevronMargin">8 0 16 0</Thickness>
+  <Thickness x:Key="ExpanderSettingCardHeaderBorderThickness">1</Thickness>
+  <Thickness x:Key="ExpanderSettingCardContentDownBorderThickness">1 0</Thickness>
+  <Thickness x:Key="ExpanderSettingCardIFooterMargin">16 0 0 0</Thickness>
+  <x:Double x:Key="ExpanderSettingCardIconSize">24</x:Double>
+
+  <!--  ToggleButton for the Expander  -->
+  <ControlTheme x:Key="SettingsExpanderToggleButtonStyle" TargetType="ToggleButton">
+    <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+    <Setter Property="BorderThickness" Value="{DynamicResource ExpanderSettingCardHeaderBorderThickness}"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
+    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}"/>
+    <Setter Property="BackgroundSizing" Value="InnerBorderEdge"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Border
+          Name="Root"
+          Padding="{TemplateBinding Padding}"
+          Background="{TemplateBinding Background}"
+          BackgroundSizing="{TemplateBinding BackgroundSizing}"
+          BorderBrush="{TemplateBinding BorderBrush}"
+          BorderThickness="{TemplateBinding BorderThickness}"
+          CornerRadius="{TemplateBinding CornerRadius}">
+          <Border.Transitions>
+            <Transitions>
+              <BrushTransition Property="Background" Duration="00:00:00.083"/>
+              <BrushTransition Property="BorderBrush" Duration="00:00:00.083"/>
+            </Transitions>
+          </Border.Transitions>
+          <Grid ColumnDefinitions="*,Auto">
+            <ContentPresenter Content="{TemplateBinding Content}"/>
+
+            <ui:SymbolIcon
+              Name="ExpandCollapseChevron"
+              Grid.Column="1"
+              Margin="{DynamicResource ExpanderSettingCardExpandCollapseChevronMargin}"
+              FontSize="18"
+              Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+              Symbol="ChevronDown"/>
+          </Grid>
+        </Border>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^ /template/ ui|SymbolIcon#ExpandCollapseChevron">
+      <Setter Property="RenderTransformOrigin" Value="50%, 50%"/>
+      <Setter Property="Transitions">
+        <Transitions>
+          <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.167"/>
+        </Transitions>
+      </Setter>
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Border#Root">
+      <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}"/>
+    </Style>
+    <Style Selector="^:pressed /template/ Border#Root">
+      <Setter Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}"/>
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
+    </Style>
+
+    <Style Selector="^:disabled /template/ Border#Root">
+      <Setter Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}"/>
+      <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+      <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+    </Style>
+
+    <Style Selector="^:checked">
+      <Style Selector="^ /template/ ui|SymbolIcon#ExpandCollapseChevron">
+        <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+      </Style>
+      <Style Selector="^ /template/ Border#Root">
+        <Setter Property="CornerRadius" Value="{Binding Source={StaticResource ControlCornerRadius}, Converter={StaticResource TopCornerRadiusFilterConverter}}"/>
+      </Style>
+    </Style>
+  </ControlTheme>
+
+  <!--  Expander  -->
+  <ControlTheme x:Key="SettingsExpanderStyle" TargetType="ui:FluentExpander">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="MinWidth" Value="0"/>
+    <Setter Property="MinHeight" Value="{DynamicResource ExpanderSettingCardMinHeight}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+    <Setter Property="BorderThickness" Value="{DynamicResource ExpanderSettingCardContentDownBorderThickness}"/>
+    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <StackPanel>
+          <ToggleButton
+            Name="ExpanderHeader"
+            MinHeight="{TemplateBinding MinHeight}"
+            Content="{TemplateBinding Header}"
+            IsChecked="{TemplateBinding IsExpanded,
+                                        Mode=TwoWay}"
+            IsEnabled="{TemplateBinding IsEnabled}"
+            Theme="{StaticResource SettingsExpanderToggleButtonStyle}"/>
+          <Border
+            Name="ExpanderContentClip"
+            Background="{TemplateBinding Background}"
+            BackgroundSizing="InnerBorderEdge"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            ClipToBounds="True"
+            CornerRadius="{TemplateBinding CornerRadius,
+                                           Converter={StaticResource BottomCornerRadiusFilterConverter}}">
+            <Border
+              Name="PART_ExpanderContent"
+              MinWidth="{TemplateBinding MinWidth}"
+              MinHeight="{DynamicResource FluentExpanderContentMinHeight}">
+              <ContentPresenter
+                Name="PART_ContentPresenter"
+                Margin="0"
+                Padding="{TemplateBinding Padding}"
+                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                Content="{TemplateBinding Content}"
+                ContentTemplate="{TemplateBinding ContentTemplate}"/>
+            </Border>
+          </Border>
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:down">
+      <Style Selector="^:expanded /template/ Border#ExpanderContentClip">
+        <Setter Property="CornerRadius" Value="{TemplateBinding CornerRadius, Converter={StaticResource BottomCornerRadiusFilterConverter}}"/>
+        <Setter Property="BorderThickness" Value="1 0 1 1"/>
+      </Style>
+    </Style>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type ui:ExpanderSettingCard}" TargetType="ui:ExpanderSettingCard">
+    <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
+    <Setter Property="BorderThickness" Value="{DynamicResource ExpanderHeaderBorderThickness}"/>
+    <Setter Property="Padding" Value="{DynamicResource ExpanderSettingCardPadding}"/>
+    <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}"/>
+    <Setter Property="MinHeight" Value="{DynamicResource ExpanderSettingCardMinHeight}"/>
+    <Setter Property="ItemsPanel">
+      <ItemsPanelTemplate>
+        <StackPanel/>
+      </ItemsPanelTemplate>
+    </Setter>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <ui:FluentExpander
+          Name="PART_Expander"
+          IsExpanded="{TemplateBinding IsExpanded,
+                                       Mode=TwoWay}"
+          Theme="{StaticResource SettingsExpanderStyle}">
+          <ui:FluentExpander.Header>
+            <Border
+              Name="ContentHost"
+              Padding="{TemplateBinding Padding}"
+              Background="Transparent">
+              <Grid
+                ColumnDefinitions="Auto, Auto, *"
+                ColumnSpacing="15"
+                RowDefinitions="*,*">
+                <ui:FluentIconElement
+                  Name="HeaderIcon"
+                  Grid.RowSpan="2"
+                  Grid.Column="0"
+                  Width="{DynamicResource ExpanderSettingCardIconSize}"
+                  Height="{DynamicResource ExpanderSettingCardIconSize}"
+                  Margin="16,0,0,0"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  IsVisible="{TemplateBinding IconSource,
+                                              Converter={x:Static ObjectConverters.IsNotNull}}"
+                  Source="{TemplateBinding IconSource}"
+                  TextElement.FontSize="{DynamicResource ExpanderSettingCardIconSize}"/>
+
+                <ContentPresenter
+                  Name="PART_Header"
+                  Grid.Row="0"
+                  Grid.RowSpan="2"
+                  Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Content="{TemplateBinding Header}"
+                  ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+
+                <TextBlock
+                  Name="DescriptionText"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Classes="Caption"
+                  Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                  IsVisible="False"
+                  Text="{TemplateBinding Description}"
+                  TextWrapping="WrapWithOverflow"/>
+
+                <ContentPresenter
+                  Grid.RowSpan="2"
+                  Grid.Column="2"
+                  Margin="{DynamicResource ExpanderSettingCardIFooterMargin}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Center"
+                  Content="{TemplateBinding Footer}"
+                  ContentTemplate="{TemplateBinding FooterTemplate}"/>
+              </Grid>
+            </Border>
+          </ui:FluentExpander.Header>
+
+          <ItemsPresenter ItemsPanel="{TemplateBinding ItemsPanel}"/>
+        </ui:FluentExpander>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:disabled">
+      <Style Selector="^ /template/ TextBlock#DescriptionText">
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+      </Style>
+    </Style>
+
+    <Style Selector="^:description">
+      <Style Selector="^ /template/ ContentPresenter#PART_Header">
+        <Setter Property="Grid.RowSpan" Value="1"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+      </Style>
+
+      <Style Selector="^ /template/ TextBlock#DescriptionText">
+        <Setter Property="IsVisible" Value="True"/>
+      </Style>
+    </Style>
+
+    <Style Selector="^:empty /template/ ItemsPresenter#ItemsHost">
+      <Setter Property="IsVisible" Value="False"/>
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

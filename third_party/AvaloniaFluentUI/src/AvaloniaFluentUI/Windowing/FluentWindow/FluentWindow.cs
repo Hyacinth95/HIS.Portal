@@ -1,0 +1,574 @@
+﻿using System;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Avalonia.Input;
+using Avalonia.Interactivity;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Styling;
+using Avalonia.VisualTree;
+using AvaloniaFluentUI.Controls;
+using AvaloniaFluentUI.Controls.Primitives;
+using AvaloniaFluentUI.Styling;
+
+namespace AvaloniaFluentUI.Windowing;
+
+/// <summary>
+/// 支持 Windows, MacOS, Linux三大平台的流畅窗口
+/// </summary>
+[TemplatePart(Name = PART_CLOSE_BUTTON,     Type = typeof(Button))]
+[TemplatePart(Name = PART_MINIMIZE_BUTTON,  Type = typeof(Button))]
+[TemplatePart(Name = PART_MAXIMIZE_BUTTON,  Type = typeof(Button))]
+[TemplatePart(Name = PART_FLUENT_TITLE_BAR, Type = typeof(FluentTitleBar))]
+public partial class FluentWindow : Window
+{
+    /// <summary>
+    /// Defines the <see cref="Icon"/> property
+    /// </summary>
+    public new static readonly StyledProperty<IImage> IconProperty =
+        AvaloniaProperty.Register<FluentWindow, IImage>(nameof(Icon));
+
+    /// <summary>
+    /// Defines the AllowInteractionInTitleBar attached property
+    /// </summary>
+    public static readonly AttachedProperty<bool> AllowInteractionInTitleBarProperty =
+        AvaloniaProperty.RegisterAttached<FluentWindow, Control, bool>("AllowInteractionInTitleBar");
+
+    public static readonly StyledProperty<bool> FullScreenButtonIsVisibleProperty =
+        AvaloniaProperty.Register<FluentWindow, bool>(nameof(FullScreenButtonIsVisible));
+
+    /// <summary>
+    ///     Defines the <see cref="MinButtonIsVisible" /> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> MinButtonIsVisibleProperty =
+        AvaloniaProperty.Register<FluentWindow, bool>(nameof(MinButtonIsVisible), defaultValue: true);
+
+    /// <summary>
+    ///     Defines the <see cref="MaxButtonIsVisible" /> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> MaxButtonIsVisibleProperty =
+        AvaloniaProperty.Register<FluentWindow, bool>(nameof(MaxButtonIsVisible), defaultValue: true);
+
+    /// <summary>
+    ///     Defines the <see cref="CloseButtonIsVisible" /> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> CloseButtonIsVisibleProperty =
+        AvaloniaProperty.Register<FluentWindow, bool>(nameof(CloseButtonIsVisible), defaultValue: true);
+
+    /// <summary>
+    ///     Defines the <see cref="TitleBarContent" /> property.
+    /// </summary>
+    public static readonly StyledProperty<object?> TitleBarContentProperty =
+        AvaloniaProperty.Register<FluentWindow, object?>(nameof(TitleBarContent));
+
+    /// <summary>
+    ///     Defines the <see cref="TitleBarContentTemplate" /> property.
+    /// </summary>
+    public static readonly StyledProperty<IDataTemplate?> TitleBarContentTemplateProperty =
+        AvaloniaProperty.Register<FluentWindow, IDataTemplate?>(nameof(TitleBarContentTemplate));
+
+    /// <summary>
+    ///     Defines the <see cref="FluentTitleBarTemplateSettings" /> property.
+    /// </summary>
+    public static readonly StyledProperty<FluentTitleBarTemplateSettings> TitleBarTemplateSettingsProperty =
+        AvaloniaProperty.Register<FluentWindow, FluentTitleBarTemplateSettings>(nameof(TitleBarTemplateSettings));
+
+    /// <summary>
+    /// 获取标题栏设置模板
+    /// </summary>
+    public FluentTitleBarTemplateSettings TitleBarTemplateSettings
+    {
+        get => GetValue(TitleBarTemplateSettingsProperty);
+        private set => SetValue(TitleBarTemplateSettingsProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置标题栏内容数据模板
+    /// </summary>
+    public IDataTemplate? TitleBarContentTemplate
+    {
+        get => GetValue(TitleBarContentTemplateProperty);
+        set => SetValue(TitleBarContentTemplateProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置标题栏内容
+    /// </summary>
+    public object? TitleBarContent
+    {
+        get => GetValue(TitleBarContentProperty);
+        set => SetValue(TitleBarContentProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置关闭按钮是否显示
+    /// </summary>
+    public bool CloseButtonIsVisible
+    {
+        get => GetValue(CloseButtonIsVisibleProperty);
+        set => SetValue(CloseButtonIsVisibleProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置最大化按钮是否显示
+    /// </summary>
+    public bool MaxButtonIsVisible
+    {
+        get => GetValue(MaxButtonIsVisibleProperty);
+        set => SetValue(MaxButtonIsVisibleProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置最小化按钮是否显示
+    /// </summary>
+    public bool MinButtonIsVisible
+    {
+        get => GetValue(MinButtonIsVisibleProperty);
+        set => SetValue(MinButtonIsVisibleProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置全屏按钮是否显示
+    /// TODO: 暂未实现
+    /// </summary>
+    public bool FullScreenButtonIsVisible
+    {
+        get => GetValue(FullScreenButtonIsVisibleProperty);
+        set => SetValue(FullScreenButtonIsVisibleProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the icon for the window
+    /// </summary>
+    /// <remarks>
+    /// Note that this type is <see cref="IImage"/> and not <see cref="WindowIcon"/>, like on Window
+    /// This is done to allow using a window icon in managed titlebar. Provided the
+    /// image is an <see cref="IBitmap"/>, it should convert to a WindowIcon without 
+    /// issue and you'll still get the icon in the taskbar, on other OS's, etc.
+    /// </remarks>
+    public new IImage Icon
+    {
+        get => GetValue(IconProperty);
+        set => SetValue(IconProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value whether the AppWindow should hide its minimize/maximize buttons like 
+    /// a dialog window. This property is only respected on Windows.
+    /// </summary>
+    public bool ShowAsDialog
+    {
+        get => _hideSizeButtons;
+        set
+        {
+            _hideSizeButtons = value;
+            PseudoClasses.Set(":dialog", value);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the splash screen that should show when the window first loads
+    /// </summary>
+    public IApplicationSplashScreen? SplashScreen
+    {
+        get => _splashContext?.SplashScreen;
+        set
+        {
+            if (value == null)
+            {
+                if (_splashContext != null)
+                {
+                    _splashContext.Host.SplashScreen = null;
+                }
+
+                _splashContext = null;
+                PseudoClasses.Set(":splashScreen", false);
+            }
+            else
+            {
+                _splashContext = new SplashScreenContext(value);
+                PseudoClasses.Set(":splashScreen", true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the Titlebar description information for the AppWindow
+    /// </summary>
+    /// <remarks>
+    /// Use this property to customize the colors, height, and whether the window contents should
+    /// display in the titlebar area
+    /// </remarks>
+    public FluentTitleBar? TitleBar => _titleBar;
+
+    /// <summary>
+    /// Gets the interface for custom platform-specific features through the AppWindow class
+    /// NOTE: Only implemented on Windows right now
+    /// </summary>
+    public IAppWindowPlatformFeatures PlatformFeatures { get; private set; }
+
+    /// <summary>
+    /// 获取当前平台是否为 Windows 11
+    /// </summary>
+    protected internal bool IsWindows11 { get; internal set; }
+
+    /// <summary>
+    /// 获取当前运行平台是否为 Windows
+    /// </summary>
+    protected internal bool IsWindows { get; internal set; }
+
+    /// <summary>
+    /// 获取当前运行平台是否为 Linux
+    /// </summary>
+    protected internal bool IsLinux { get; internal set; }
+
+    protected override Type StyleKeyOverride => typeof(FluentWindow);
+
+    /// <summary>
+    /// Gets the value of the <see cref="AllowInteractionInTitleBarProperty"/> attached property for the given control
+    /// </summary>
+    public static bool GetAllowInteractionInTitleBar(Control c) => c.GetValue(AllowInteractionInTitleBarProperty);
+
+    /// <summary>
+    /// Sets the value of the <see cref="AllowInteractionInTitleBarProperty"/> attached property for the given control
+    /// </summary>
+    /// <param name="c"></param>
+    /// <param name="b"></param>
+    public static void SetAllowInteractionInTitleBar(Control c, bool b) =>
+        c.SetValue(AllowInteractionInTitleBarProperty, b);
+
+    private SplashScreenContext? _splashContext;
+    private FluentTitleBar? _titleBar;
+    private bool _hideSizeButtons;
+
+    private Button? _minimizeButton;
+    private Button? _maximizeButton;
+    private Button? _closeButton;
+
+    /// <summary>
+    /// 弹出信息体条的载体
+    /// </summary>
+    public InfoBarHost InfoBarHost { get; private set; }
+
+    private const string PART_FLUENT_TITLE_BAR = "PART_FluentTitleBar";
+    private const string SPLASH_HOST = "SplashHost";
+    private const string INFO_BAR_HOST = "InfoBarHost";
+
+    private const string PART_MINIMIZE_BUTTON = "PART_MinimizeButton";
+    private const string PART_MAXIMIZE_BUTTON = "PART_MaximizeButton";
+    private const string PART_CLOSE_BUTTON = "PART_CloseButton";
+
+    public FluentWindow()
+    {
+        TitleBarTemplateSettings = new FluentTitleBarTemplateSettings();
+        PseudoClasses.Add(":noFullScreen");
+
+        if (OperatingSystem.IsWindows() && !Design.IsDesignMode)
+        {
+            InitializeWindowPlatform();
+        }
+        else if (OperatingSystem.IsLinux() && !Design.IsDesignMode)
+        {
+            InitializeLinuxPlatform();
+        }
+
+        PointerPressed += OnWindowPointerPressed;
+
+        if (!IsWindows)
+        {
+            PseudoClasses.Add(":is-not-windows");
+        }
+
+        var margin = TitleBarTemplateSettings.Margin;
+        TitleBarTemplateSettings.Margin = new Thickness(margin.Left, margin.Top, IsWindows ? 135.99 : 135, margin.Bottom);
+    }
+
+    private void OnWindowPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (_titleBar == null)
+            return;
+
+        if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+        {
+            var point = e.GetPosition(_titleBar);
+            if (HitTestTitleBar(point))
+            {
+                if (CanMaximize && CanResize && e.ClickCount == 2)
+                {
+                    WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                    e.Handled = true;
+                }
+                else
+                {
+                    BeginMoveDrag(e);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 启用亚力克背景效果, 只在<c>Window</c>系统上生效
+    /// </summary>
+    /// <param name="enable">是否启用</param>
+    public void EnabledAcrylicBlue(bool enable)
+    {
+        if (enable)
+        {
+            Background = Brush.Parse(AvaloniaFluentTheme.Instance.IsDarkTheme ? "#30161616" : "#30F3F3F3");
+            TransparencyLevelHint = [WindowTransparencyLevel.AcrylicBlur];
+            return;
+        }
+
+        ResetBackground();
+    }
+
+    /// <summary>
+    /// 启用云母背景效果, 只在<c>Windows11</c>上有效
+    /// </summary>
+    /// <param name="enable">是否启用</param>
+    public void EnabledMica(bool enable)
+    {
+        if (IsWindows11 && enable)
+        {
+            Background = Brushes.Transparent;
+            TransparencyLevelHint = [WindowTransparencyLevel.Mica];
+            return;
+        }
+
+        ResetBackground();
+    }
+
+    private void ResetBackground()
+    {
+        TransparencyLevelHint = [];
+        Background = Brush.Parse(AvaloniaFluentTheme.Instance.IsDarkTheme ? "#202020" : "#F0F4F9");
+    }
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+        _minimizeButton?.Click -= OnMinimizeButtonClicked;
+        _maximizeButton?.Click -= OnMaximizeButtonClicked;
+        _closeButton?.Click -= OnCloseButtonClicked;
+
+        _minimizeButton = e.NameScope.Find<Button>(PART_MINIMIZE_BUTTON);
+        _maximizeButton = e.NameScope.Find<Button>(PART_MAXIMIZE_BUTTON);
+        _closeButton = e.NameScope.Find<Button>(PART_CLOSE_BUTTON);
+        InfoBarHost = e.NameScope.Find<InfoBarHost>(INFO_BAR_HOST);
+
+        _minimizeButton?.Click += OnMinimizeButtonClicked;
+        _maximizeButton?.Click += OnMaximizeButtonClicked;
+        _closeButton?.Click += OnCloseButtonClicked;
+
+        if (!Design.IsDesignMode)
+        {
+            _titleBar = e.NameScope.Find<FluentTitleBar>(PART_FLUENT_TITLE_BAR);
+        }
+
+        // 只在 Linux 平台使用
+        _windowBorder = e.NameScope.Find<Border>("RootBorder");
+
+        if (SplashScreen != null)
+        {
+            var host = e.NameScope.Find<AppSplashScreen>(SPLASH_HOST);
+            if (host != null)
+            {
+                _splashContext?.Host = host;
+            }
+        }
+    }
+
+    private void OnCloseButtonClicked(object? sender, RoutedEventArgs e) => Close();
+
+    private void OnMaximizeButtonClicked(object? sender, RoutedEventArgs e) => WindowState =
+        WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+
+    private void OnMinimizeButtonClicked(object? sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == IconProperty)
+        {
+            base.Icon = new WindowIcon(change.NewValue as Bitmap);
+        }
+        else if (change.Property == FullScreenButtonIsVisibleProperty ||
+                 change.Property == MinButtonIsVisibleProperty ||
+                 change.Property == MaxButtonIsVisibleProperty ||
+                 change.Property == CloseButtonIsVisibleProperty)
+        {
+            var margin = TitleBarTemplateSettings.Margin;
+            double value = IsWindows ? 45.33 : 45;
+
+            double rm = 0;
+            if (FullScreenButtonIsVisible)
+                rm += value;
+            if (MinButtonIsVisible)
+                rm += value;
+            if (MaxButtonIsVisible)
+                rm += value;
+            if (CloseButtonIsVisible)
+                rm += value;
+
+            TitleBarTemplateSettings.Margin = new Thickness(margin.Left, margin.Top, rm, margin.Bottom);
+        }
+    }
+
+    protected override async void OnOpened(EventArgs e)
+    {
+        if (_splashContext != null && !_splashContext.HasShownSplashScreen && !Design.IsDesignMode)
+        {
+            PseudoClasses.Set(":splash-open", true);
+            var time = DateTime.Now;
+
+            // n00b async/await mistake - need to await here, thansk to GH taj-ny for finding and fixing this
+            await _splashContext.RunJobs();
+
+            var delta = DateTime.Now - time;
+            if (delta.TotalMilliseconds < _splashContext.SplashScreen.MinimumShowTime)
+            {
+                await Task.Delay(
+                    Math.Max(1, _splashContext.SplashScreen.MinimumShowTime - (int)delta.TotalMilliseconds));
+            }
+
+            LoadApp();
+        }
+
+        base.OnOpened(e);
+    }
+
+    protected override void OnClosed(EventArgs e)
+    {
+        _splashContext?.TryCancel();
+
+        base.OnClosed(e);
+    }
+
+    internal bool HitTestTitleBar(Point p)
+    {
+        if (_titleBar == null)
+            return false;
+
+        if (p.Y < TitleBar?.Height)
+        {
+            if (!ComplexHitTest(p))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    internal bool ComplexHitTest(Point p)
+    {
+        var result = this.InputHitTest(p) as InputElement;
+
+        if (CustomComplexHitTest(result))
+            return false;
+        
+        // Special case for TabViewListView during drag operations where blank space 
+        // is inserted and causes HitTest to fail (since nothing focusable is there)
+        if (result is Visual { TemplatedParent: TabViewListView })
+            return false;
+
+        if (result == _titleBar)
+            return true;
+
+        while (result != null)
+        {
+            if (result.IsHitTestVisible && result.Focusable)
+                return false;
+
+            result = result.GetVisualParent() as InputElement;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// 自定义击中测试, 在window上决定是否弹出系统级右键菜单, 返回<c>True</c>则阻止显示
+    /// </summary>
+    /// <returns></returns>
+    protected virtual bool CustomComplexHitTest(InputElement? element)
+    {
+        return false;
+    }
+    
+    private async void LoadApp()
+    {
+        if (Presenter == null) { return; }
+        
+        Presenter.IsVisible = true;
+
+        // Taking this out, it's causing flickering of the content after the splash fade animation
+        // Another regression in the animation system for 11.0...
+        //using var disp = cp.SetValue(OpacityProperty, 0d, Avalonia.Data.BindingPriority.Animation);
+        var aniSplash = new Animation
+        {
+            Duration = TimeSpan.FromMilliseconds(250),
+            FillMode = FillMode.Forward,
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0d),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 1d)
+                    }
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1d),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 0d),
+                    },
+                    KeySpline = new KeySpline(0,0,0,1)
+                }
+            }
+        };
+
+        var aniContent = new Animation
+        {
+            Duration = TimeSpan.FromMilliseconds(167),
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0d),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 0d)
+                    }
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1d),
+                    Setters =
+                    {
+                        new Setter(OpacityProperty, 1d),
+                    },
+                    KeySpline = new KeySpline(0,0,0,1)
+                }
+            }
+        };
+
+        if (_splashContext != null)
+        {
+            await Task.WhenAll(aniSplash.RunAsync(_splashContext.Host), aniContent.RunAsync(Presenter));
+            
+            PseudoClasses.Set(":splash-open", false); 
+            _splashContext.HasShownSplashScreen = true;
+        }
+    }
+}

@@ -1,0 +1,744 @@
+<Window
+    x:Class="HIS.Portal.Shell.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fui="using:AvaloniaFluentUI.Controls"
+    xmlns:nav="using:HIS.Portal.Navigation"
+    xmlns:vm="using:HIS.Portal.Shell"
+    Title="仁和医院 · 临床门户 M1（演示数据）"
+    Width="1440"
+    Height="900"
+    MinWidth="1024"
+    MinHeight="540"
+    WindowStartupLocation="CenterScreen"
+    Background="{DynamicResource PortalBackgroundBrush}"
+    FontFamily="{DynamicResource DefaultFontFamily}"
+    FontSize="13"
+    x:DataType="vm:MainWindowViewModel"
+    KeyDown="OnWindowKeyDown">
+
+  <Grid RowDefinitions="58,*,28" Background="{DynamicResource PortalBackgroundBrush}">
+
+    <!--  Top application header  -->
+    <Border
+        Grid.Row="0"
+        Background="White"
+        BorderBrush="#E5E9EF"
+        BorderThickness="0,0,0,1">
+      <Grid Margin="14,0,18,0" ColumnDefinitions="Auto,*,Auto">
+        <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="10">
+          <Border
+              Width="34"
+              Height="34"
+              Background="{DynamicResource PortalAccentBrush}"
+              CornerRadius="8">
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="17"
+                FontWeight="SemiBold"
+                Foreground="White"
+                Text="仁" />
+          </Border>
+          <StackPanel VerticalAlignment="Center" Spacing="1">
+            <TextBlock FontSize="15" FontWeight="SemiBold" Text="仁和医院 · 临床门户" />
+            <TextBlock
+                FontSize="11"
+                Foreground="#667085"
+                LetterSpacing="1.2"
+                Text="HIS PORTAL / 门诊工作台 · M1" />
+          </StackPanel>
+        </StackPanel>
+
+        <Grid
+            Grid.Column="1"
+            MinWidth="220"
+            MaxWidth="560"
+            Margin="24,0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center">
+          <TextBox
+              x:Name="GlobalSearchBox"
+              Padding="34,6,64,6"
+              VerticalAlignment="Center"
+              AutomationProperties.AutomationId="GlobalSearchBox"
+              AutomationProperties.Name="全局功能搜索"
+              Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              KeyDown="OnGlobalSearchKeyDown"
+              PlaceholderText="搜索功能、就诊号或患者姓名" />
+          <PathIcon
+              Width="15"
+              Height="15"
+              Margin="11,0,0,0"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Center"
+              Data="{StaticResource IconSearch}"
+              Foreground="#667085"
+              IsHitTestVisible="False" />
+          <Border
+              Padding="5,2"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Center"
+              Margin="0,0,8,0"
+              Background="#F2F4F7"
+              CornerRadius="4">
+            <TextBlock FontSize="11" Foreground="#667085" Text="Ctrl K" />
+          </Border>
+        </Grid>
+
+        <StackPanel
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="14">
+          <StackPanel VerticalAlignment="Center" Spacing="1">
+            <TextBlock HorizontalAlignment="Right" FontSize="11" Foreground="#475467" Text="{Binding DateText}" />
+            <TextBlock HorizontalAlignment="Right" FontSize="11" Foreground="#667085" Text="{Binding ClockText}" />
+          </StackPanel>
+          <Border Width="1" Height="24" Background="#E7ECF3" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <Border
+                Width="32"
+                Height="32"
+                Background="#EAF4FD"
+                CornerRadius="16">
+              <TextBlock
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  FontSize="12"
+                  FontWeight="SemiBold"
+                  Foreground="#0F6CBD"
+                  Text="陈" />
+            </Border>
+            <StackPanel VerticalAlignment="Center" Spacing="1">
+              <TextBlock FontSize="12" FontWeight="SemiBold" Text="陈晓" />
+              <TextBlock FontSize="11" Foreground="#667085" Text="门诊医生 · 工号 0261" />
+            </StackPanel>
+          </StackPanel>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!--  Main workspace  -->
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+
+      <!--  Collapsible left navigation  -->
+      <Border
+          x:Name="NavHost"
+          Grid.Column="0"
+          Width="232"
+          Background="#F8FAFC"
+          BorderBrush="#E5E9EF"
+          BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="48,*,Auto">
+          <Grid
+              Grid.Row="0"
+              Margin="10,0,8,0"
+              ColumnDefinitions="Auto,*,Auto">
+            <Button
+                x:Name="NavToggleButton"
+                Width="32"
+                Height="32"
+                VerticalAlignment="Center"
+                AutomationProperties.AutomationId="NavToggleButton"
+                AutomationProperties.Name="收起或展开导航"
+                Classes="IconButton"
+                Click="OnToggleNavigation"
+                ToolTip.Tip="收起 / 展开导航">
+              <PathIcon
+                  Width="15"
+                  Height="15"
+                  Data="{StaticResource IconList}"
+                  Foreground="#475467" />
+            </Button>
+            <TextBlock
+                Grid.Column="1"
+                Margin="8,0,0,0"
+                VerticalAlignment="Center"
+                Classes="NavLabel"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="#475467"
+                Text="工作台导航" />
+            <Border
+                Grid.Column="2"
+                Padding="6,2"
+                VerticalAlignment="Center"
+                Background="#EDF4FC"
+                Classes="NavHide"
+                CornerRadius="8">
+              <TextBlock FontSize="11" Foreground="#0F6CBD" Text="DEMO" />
+            </Border>
+          </Grid>
+
+          <ScrollViewer
+              Grid.Row="1"
+              HorizontalScrollBarVisibility="Disabled"
+              VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8,2,8,10" Spacing="2">
+              <TextBlock
+                  Margin="6,4,0,5"
+                  Classes="NavSection"
+                  FontSize="11"
+                  Foreground="#667085"
+                  LetterSpacing="1"
+                  Text="临床工作台" />
+
+              <Button
+                  x:Name="NavHome"
+                  AutomationProperties.AutomationId="NavHome"
+                  AutomationProperties.Name="工作台首页"
+                  Classes="NavItem"
+                  Click="OnNavHomeClick"
+                  ToolTip.Tip="工作台首页">
+                <Grid ColumnDefinitions="22,*" ColumnSpacing="7">
+                  <PathIcon
+                      Width="15"
+                      Height="15"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconHome}"
+                      Foreground="{Binding $parent[Button].Foreground}" />
+                  <TextBlock
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      Classes="NavLabel"
+                      Text="工作台首页" />
+                </Grid>
+              </Button>
+
+              <Button
+                  x:Name="NavVisitList"
+                  AutomationProperties.AutomationId="NavVisitList"
+                  AutomationProperties.Name="门诊接诊"
+                  Classes="NavItem"
+                  Click="OnNavVisitListClick"
+                  ToolTip.Tip="门诊接诊">
+                <Grid ColumnDefinitions="22,*,Auto" ColumnSpacing="7">
+                  <PathIcon
+                      Width="15"
+                      Height="15"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconList}"
+                      Foreground="{Binding $parent[Button].Foreground}" />
+                  <TextBlock
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      Classes="NavLabel"
+                      Text="门诊接诊" />
+                  <Border
+                      x:Name="VisitCountBadge"
+                      Grid.Column="2"
+                      Padding="6,1"
+                      VerticalAlignment="Center"
+                      Background="#E8F2FC"
+                      Classes="NavLabel"
+                      CornerRadius="7">
+                    <TextBlock FontSize="11" Foreground="#0F6CBD" Text="30" />
+                  </Border>
+                </Grid>
+              </Button>
+
+              <Button
+                  x:Name="NavWeb"
+                  AutomationProperties.AutomationId="NavWeb"
+                  AutomationProperties.Name="检查申请 Web 演示"
+                  Classes="NavItem"
+                  Click="OnNavWebClick"
+                  ToolTip.Tip="检查申请 Web 演示">
+                <Grid ColumnDefinitions="22,*,Auto" ColumnSpacing="7">
+                  <PathIcon
+                      Width="15"
+                      Height="15"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconWeb}"
+                      Foreground="{Binding $parent[Button].Foreground}" />
+                  <TextBlock
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      Classes="NavLabel"
+                      Text="检查申请（Web）" />
+                  <Border
+                      x:Name="WebLiveBadge"
+                      Grid.Column="2"
+                      Padding="6,1"
+                      VerticalAlignment="Center"
+                      Background="#E9F7F1"
+                      Classes="NavLabel"
+                      CornerRadius="7">
+                    <TextBlock FontSize="11" Foreground="#0B6B4F" Text="LIVE" />
+                  </Border>
+                </Grid>
+              </Button>
+
+              <Border
+                  Height="1"
+                  Margin="6,9"
+                  Background="#E7ECF3"
+                  Classes="NavHide" />
+
+              <TextBlock
+                  Margin="6,3,0,4"
+                  Classes="NavSection"
+                  FontSize="11"
+                  Foreground="#667085"
+                  LetterSpacing="1"
+                  Text="我的收藏" />
+              <Button
+                  x:Name="FavoriteVisitButton"
+                  Margin="0,1"
+                  Padding="11,0"
+                  MinHeight="34"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Classes="NavItem NavHide"
+                  Click="OnNavVisitListClick"
+                  ToolTip.Tip="收藏：门诊接诊">
+                <Grid ColumnDefinitions="22,*" ColumnSpacing="7">
+                  <PathIcon
+                      Width="14"
+                      Height="14"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconHeart}"
+                      Foreground="#D97706" />
+                  <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="门诊接诊" />
+                </Grid>
+              </Button>
+              <Button
+                  x:Name="FavoriteWebButton"
+                  Margin="0,1"
+                  Padding="11,0"
+                  MinHeight="34"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  Classes="NavItem NavHide"
+                  Click="OnNavWebClick"
+                  ToolTip.Tip="收藏：检查申请">
+                <Grid ColumnDefinitions="22,*" ColumnSpacing="7">
+                  <PathIcon
+                      Width="14"
+                      Height="14"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconHeart}"
+                      Foreground="#D97706" />
+                  <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="检查申请" />
+                </Grid>
+              </Button>
+
+              <Border
+                  Height="1"
+                  Margin="6,9"
+                  Background="#E7ECF3"
+                  Classes="NavHide" />
+
+              <TextBlock
+                  Margin="6,3,0,4"
+                  Classes="NavSection"
+                  FontSize="11"
+                  Foreground="#667085"
+                  LetterSpacing="1"
+                  Text="最近打开" />
+              <ItemsControl
+                  x:Name="RecentPagesList"
+                  Classes="NavHide"
+                  ItemsSource="{Binding RecentPages}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate x:DataType="vm:RecentPageItem">
+                    <Button
+                        Margin="0,1"
+                        Padding="11,5"
+                        MinHeight="38"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Classes="NavItem"
+                        Click="OnRecentPageClick"
+                        Tag="{Binding Key}">
+                      <Grid ColumnDefinitions="22,*,Auto" ColumnSpacing="7">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="Symbol"
+                            FontSize="12"
+                            Foreground="#667085"
+                            Text="{Binding Glyph}" />
+                        <StackPanel Grid.Column="1" Spacing="0">
+                          <TextBlock FontSize="11" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding Subtitle}" TextTrimming="CharacterEllipsis" />
+                        </StackPanel>
+                        <TextBlock
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="#667085"
+                            Text="{Binding TimeText}" />
+                      </Grid>
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </ScrollViewer>
+
+          <StackPanel
+              Grid.Row="2"
+              Margin="10,8,10,10"
+              Classes="NavHide"
+              Spacing="7">
+            <Border Padding="10,8" Background="#FFFFFF" BorderBrush="#E3E8EF" BorderThickness="1" CornerRadius="7">
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="7">
+                <Ellipse
+                    Width="7"
+                    Height="7"
+                    VerticalAlignment="Center"
+                    Fill="#12B76A" />
+                <StackPanel Grid.Column="1" Spacing="1">
+                  <TextBlock FontSize="11" FontWeight="SemiBold" Text="演示模式已启用" />
+                  <TextBlock FontSize="11" Foreground="#667085" Text="合成数据 · 本地构建" />
+                </StackPanel>
+              </Grid>
+            </Border>
+            <TextBlock
+                HorizontalAlignment="Center"
+                FontSize="11"
+                Foreground="#667085"
+                Text="HIS.Portal M1 · .NET 10" />
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!--  Right work area  -->
+      <Grid Grid.Column="1" RowDefinitions="36,45,*">
+        <Border
+            Grid.Row="0"
+            Padding="16,0"
+            Background="#FBFCFE"
+            BorderBrush="#E5E9EF"
+            BorderThickness="0,0,0,1">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="7">
+              <TextBlock FontSize="11" Foreground="#667085" Text="门诊工作台" />
+              <TextBlock FontSize="11" Foreground="#C0C7D2" Text="/" />
+              <TextBlock FontSize="11" Foreground="#475467" Text="{Binding ActivePageTitle}" />
+              <Border Padding="6,1" Background="#F2F4F7" CornerRadius="7">
+                <TextBlock FontSize="11" Foreground="#667085" Text="{Binding ActivePageKey}" />
+              </Border>
+            </StackPanel>
+            <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="12">
+              <TextBlock FontSize="11" Foreground="#667085" Text="本部院区" />
+              <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+              <TextBlock FontSize="11" Foreground="#667085" Text="门诊医生站 OPD-03" />
+              <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="演示会话" />
+            </StackPanel>
+          </Grid>
+        </Border>
+
+        <Border
+            Grid.Row="1"
+            Background="White"
+            BorderBrush="#E5E9EF"
+            BorderThickness="0,0,0,1">
+          <fui:TabView
+              x:Name="BusinessTabs"
+              Margin="10,0,10,0"
+              VerticalAlignment="Center"
+              CanReorderTabs="False"
+              CloseButtonOverlayMode="Always"
+              IsAddTabButtonVisible="False"
+              TabWidthMode="SizeToContent">
+            <fui:TabView.TabItemTemplate>
+              <DataTemplate x:DataType="nav:PageDocument">
+                <fui:TabViewItem IsClosable="{Binding IsClosable}" Tag="{Binding}">
+                  <fui:TabViewItem.Header>
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="7">
+                      <TextBlock
+                          VerticalAlignment="Center"
+                          Classes="Symbol"
+                          FontSize="12"
+                          Foreground="#667085"
+                          Text="{Binding TabGlyph}" />
+                      <TextBlock
+                          MaxWidth="220"
+                          VerticalAlignment="Center"
+                          FontSize="12"
+                          FontWeight="SemiBold"
+                          Foreground="#344054"
+                          Text="{Binding Title}"
+                          TextTrimming="CharacterEllipsis" />
+                      <Ellipse
+                          Width="6"
+                          Height="6"
+                          VerticalAlignment="Center"
+                          Fill="#D97706"
+                          IsVisible="{Binding ViewModel.IsDirty}" />
+                    </StackPanel>
+                  </fui:TabViewItem.Header>
+                </fui:TabViewItem>
+              </DataTemplate>
+            </fui:TabView.TabItemTemplate>
+          </fui:TabView>
+        </Border>
+
+        <Border
+            Grid.Row="2"
+            Margin="14,12,14,12"
+            Background="White"
+            BoxShadow="0 3 12 0 #10000000"
+            ClipToBounds="True"
+            CornerRadius="8">
+          <Grid x:Name="PageHost" Background="White" />
+        </Border>
+      </Grid>
+    </Grid>
+
+    <!--  Status bar  -->
+    <Border
+        Grid.Row="2"
+        Padding="12,0,16,0"
+        Background="White"
+        BorderBrush="#E5E9EF"
+        BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="7">
+          <Ellipse
+              Width="7"
+              Height="7"
+              VerticalAlignment="Center"
+              Fill="#D97706" />
+          <TextBlock FontSize="11" Foreground="#8A4B08" Text="演示模式" />
+          <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding DataSourceNotice}" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="12">
+          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding DiagnosticsSummary}" />
+          <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding PageCountText}" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="11">
+          <StackPanel Orientation="Horizontal" Spacing="5">
+            <Ellipse
+                Width="6"
+                Height="6"
+                VerticalAlignment="Center"
+                Fill="#12B76A" />
+            <TextBlock FontSize="11" Foreground="#475467" Text="{Binding WebStateText}" />
+          </StackPanel>
+          <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding ActivePageKey}" />
+          <TextBlock FontSize="11" Foreground="#C0C7D2" Text="|" />
+          <TextBlock FontSize="11" Foreground="#667085" Text="{Binding ClockText}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!--  Global search results  -->
+    <Border
+        x:Name="SearchPopup"
+        Grid.RowSpan="3"
+        Width="540"
+        MaxHeight="430"
+        Margin="0,52,0,0"
+        Padding="6"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Top"
+        Background="White"
+        BorderBrush="#DCE4ED"
+        BorderThickness="1"
+        BoxShadow="0 8 24 0 #26000000"
+        CornerRadius="8"
+        IsVisible="{Binding IsSearchOpen}"
+        ZIndex="50">
+      <Grid RowDefinitions="Auto,*">
+        <Grid Margin="10,6,10,5" ColumnDefinitions="*,Auto">
+          <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#667085" Text="搜索结果" />
+          <TextBlock Grid.Column="1" FontSize="11" Foreground="#667085" Text="Enter 打开 · Esc 关闭" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" MaxHeight="350">
+          <StackPanel>
+            <ItemsControl ItemsSource="{Binding SearchResults}" IsVisible="{Binding HasSearchResults}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:SearchResultItem">
+                  <Button
+                      Classes="SearchResultItem"
+                      Click="OnSearchResultClick"
+                      Tag="{Binding}">
+                    <Grid ColumnDefinitions="26,*,Auto" ColumnSpacing="8">
+                      <Border
+                          Width="26"
+                          Height="26"
+                          Background="#EAF4FD"
+                          CornerRadius="6">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Classes="Symbol"
+                            FontSize="12"
+                            Foreground="#0F6CBD"
+                            Text="{Binding Glyph}" />
+                      </Border>
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Title}" />
+                        <TextBlock FontSize="11" Foreground="#667085" Text="{Binding Subtitle}" />
+                      </StackPanel>
+                      <TextBlock
+                          Grid.Column="2"
+                          VerticalAlignment="Center"
+                          FontSize="11"
+                          Foreground="#667085"
+                          Text="打开" />
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Border Padding="20,18" IsVisible="{Binding !HasSearchResults}">
+              <StackPanel Spacing="5">
+                <TextBlock HorizontalAlignment="Center" FontSize="12" FontWeight="SemiBold" Text="没有匹配的功能或记录" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="11"
+                    Foreground="#667085"
+                    Text="可尝试“接诊”“检查”或就诊号。" />
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </Border>
+
+    <!--  Close confirmation overlay (same window, no secondary business window)  -->
+    <Grid
+        x:Name="CloseDialogOverlay"
+        Grid.RowSpan="3"
+        Background="#59000000"
+        IsVisible="False"
+        Panel.ZIndex="100">
+      <Border
+          Width="468"
+          Padding="24"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Background="White"
+          BorderBrush="#E3E8EF"
+          BorderThickness="1"
+          BoxShadow="0 12 32 0 #32000000"
+          CornerRadius="10">
+        <StackPanel Spacing="13">
+          <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+            <Border
+                Width="38"
+                Height="38"
+                Background="#FFF4E5"
+                CornerRadius="19">
+              <PathIcon
+                  Width="18"
+                  Height="18"
+                  Data="{StaticResource IconSave}"
+                  Foreground="#B54708" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="2">
+              <TextBlock
+                  x:Name="CloseDialogTitle"
+                  FontSize="16"
+                  FontWeight="SemiBold"
+                  Text="保存更改后关闭？" />
+              <TextBlock
+                  x:Name="CloseDialogDetail"
+                  FontSize="11"
+                  Foreground="#667085"
+                  Text="接诊详情" />
+            </StackPanel>
+          </Grid>
+          <TextBlock
+              x:Name="CloseDialogMessage"
+              FontSize="11"
+              Foreground="#475467"
+              Text="当前页面包含未保存的草稿。选择“保存并关闭”写入内存仓储，或“放弃更改”直接关闭。"
+              TextWrapping="Wrap" />
+          <Border Padding="10" Background="#F8FAFC" CornerRadius="6">
+            <TextBlock
+                x:Name="CloseDialogHint"
+                FontSize="11"
+                Foreground="#667085"
+                Text="选择“取消”将保留当前标签、草稿和 WebView 状态。"
+                TextWrapping="Wrap" />
+          </Border>
+          <StackPanel
+              HorizontalAlignment="Right"
+              Orientation="Horizontal"
+              Spacing="8">
+            <Button
+                x:Name="DialogCancelButton"
+                Click="OnDialogCancelClick"
+                AutomationProperties.AutomationId="DialogCancelButton"
+                AutomationProperties.Name="取消关闭"
+                Classes="SecondaryButton"
+                Content="取消" />
+            <Button
+                Click="OnDialogDiscardClick"
+                x:Name="DialogDiscardButton"
+                AutomationProperties.AutomationId="DialogDiscardButton"
+                AutomationProperties.Name="放弃更改并关闭"
+                Classes="DangerGhostButton"
+                Content="放弃更改" />
+            <Button
+                x:Name="DialogSaveButton"
+                Click="OnDialogSaveClick"
+                AutomationProperties.AutomationId="DialogSaveButton"
+                AutomationProperties.Name="保存并关闭"
+                Classes="PrimaryButton"
+                Content="保存并关闭" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <!--  In-window toast  -->
+    <Border
+        x:Name="ToastHost"
+        Grid.RowSpan="3"
+        Margin="0,0,0,42"
+        Padding="13,8"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Bottom"
+        Background="#172033"
+        CornerRadius="6"
+        IsVisible="False"
+        ZIndex="90">
+      <TextBlock
+          x:Name="ToastText"
+          FontSize="11"
+          Foreground="White"
+          Text="提示" />
+    </Border>
+  </Grid>
+</Window>

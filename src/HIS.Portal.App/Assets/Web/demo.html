@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>检查申请 · 本地演示</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --accent: #0f6cbd;
+      --accent-dark: #0b5595;
+      --text: #172033;
+      --muted: #667085;
+      --line: #e3e8ef;
+      --soft: #f6f9fc;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #f3f5f8; }
+    body {
+      font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif;
+      color: var(--text);
+      padding: 18px;
+      font-size: 13px;
+    }
+    .page { max-width: 1180px; margin: 0 auto; }
+    .header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+    .eyebrow { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .badge-local { background: #e9f7f1; color: #0b6b4f; border-radius: 10px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
+    h1 { font-size: 24px; margin: 6px 0 4px; letter-spacing: .2px; }
+    .subtitle { color: var(--muted); font-size: 12px; }
+    .session { text-align: right; font-size: 11px; color: var(--muted); }
+    .session strong { display: block; margin-top: 4px; color: var(--text); font: 600 12px "Cascadia Mono", Consolas, monospace; }
+    .grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .8fr); gap: 14px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 15px; box-shadow: 0 1px 2px rgba(16,24,40,.03); }
+    .card h2 { font-size: 18px; margin: 0 0 3px; }
+    .card .hint { color: var(--muted); font-size: 11px; margin-bottom: 12px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    label { display: block; color: #475467; font-size: 12px; margin-bottom: 5px; }
+    input, select, textarea {
+      width: 100%; border: 1px solid #dce4ed; background: #fbfcfe; color: var(--text);
+      border-radius: 6px; padding: 8px 10px; font: inherit; outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: #6aa8de; box-shadow: 0 0 0 2px rgba(15,108,189,.10); background: #fff; }
+    input[readonly] { color: #475467; background: #f4f7fa; }
+    textarea { min-height: 76px; resize: vertical; line-height: 1.55; }
+    .field { margin-bottom: 11px; }
+    .check { display: flex; align-items: center; gap: 8px; color: #475467; font-size: 12px; margin: 2px 0 12px; }
+    .check input { width: 15px; height: 15px; }
+    .actions { display: flex; align-items: center; gap: 9px; border-top: 1px solid #eef1f5; padding-top: 12px; }
+    button {
+      border: 0; border-radius: 6px; padding: 8px 14px; cursor: pointer;
+      background: var(--accent); color: #fff; font-family: inherit; font-size: 13px; font-weight: 600;
+    }
+    button:hover { background: var(--accent-dark); }
+    button.secondary { background: #fff; color: #344054; border: 1px solid #d7dee8; font-weight: 500; }
+    button.secondary:hover { background: #f6f9fc; }
+    .counter-card { background: linear-gradient(145deg, #0f6cbd, #0b4e86); border: 0; color: #fff; }
+    .counter-card h2 { color: #fff; }
+    .counter-card .hint { color: #eaf4fd; }
+    .counter-value { font-size: 48px; font-weight: 600; line-height: 1; margin: 11px 0 5px; }
+    .counter-label { color: #eaf4fd; font-size: 12px; }
+    .counter-btn { width: 100%; margin-top: 15px; background: #fff; color: #0b5595; }
+    .counter-btn:hover { background: #eaf4fd; }
+    .meta { margin-top: 14px; padding-top: 13px; border-top: 1px solid #2c75ad; font-size: 11px; color: #eaf4fd; word-break: break-all; }
+    .meta strong { display: block; margin-top: 4px; color: #fff; font: 600 11px "Cascadia Mono", Consolas, monospace; }
+    .queue { margin-top: 14px; }
+    .queue-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 12px; font-weight: 600; }
+    .queue-title span { color: var(--muted); font-size: 11px; font-weight: 400; }
+    .queue-item { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid #f0f3f7; }
+    .queue-item:last-child { border-bottom: 0; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #bcd7ef; flex: 0 0 auto; }
+    .dot.active { background: #12b76a; box-shadow: 0 0 0 3px #e9f7f1; }
+    .queue-main { flex: 1; font-size: 11px; color: #475467; }
+    .queue-main b { display: block; font-size: 12px; color: var(--text); font-weight: 600; }
+    .queue-time { color: #667085; font-size: 11px; }
+    .note-box { background: #f8fafc; border-radius: 7px; padding: 10px; color: #667085; font-size: 11px; line-height: 1.65; margin-top: 12px; }
+    .result { margin-top: 12px; border-radius: 6px; padding: 9px 10px; font-size: 11px; background: #e9f7f1; color: #0b6b4f; }
+    @media (max-width: 850px) {
+      body { padding: 14px; }
+      .grid { grid-template-columns: 1fr; }
+      .session { display: none; }
+    }
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 1fr; gap: 8px; }
+      .actions { flex-wrap: wrap; }
+      .header { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <div>
+        <div class="eyebrow"><span>仁和医院 · 门诊医生站</span><span class="badge-local">本地 HTML · 离线</span></div>
+        <h1>检查申请单</h1>
+        <div class="subtitle">此表单由官方 NativeWebView 加载，仅用于验证真实浏览器控件与会话状态。</div>
+      </div>
+      <div class="session">
+        当前 Web 会话
+        <strong id="sessionTop">SID-...</strong>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>申请信息</h2>
+        <div class="hint">修改内容后切换业务标签，再回到本页应保持原值。</div>
+
+        <div class="row">
+          <div class="field">
+            <label for="patient">患者姓名</label>
+            <input id="patient" value="林芷晴" readonly />
+          </div>
+          <div class="field">
+            <label for="visitNo">就诊号</label>
+            <input id="visitNo" value="MZ20261108-001" readonly />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="exam">检查项目</label>
+            <select id="exam">
+              <option>胸部 CT 平扫</option>
+              <option>心电图检查</option>
+              <option>腹部彩色多普勒超声</option>
+              <option>血常规 + 心肌酶谱</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="priority">申请优先级</label>
+            <select id="priority">
+              <option>常规</option>
+              <option>优先</option>
+              <option>加急</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="note">临床备注</label>
+          <textarea id="note" placeholder="输入检查目的、注意事项或随访要求…"></textarea>
+        </div>
+
+        <label class="check"><input id="agree" type="checkbox" checked /> 已向患者说明检查注意事项</label>
+
+        <div class="actions">
+          <button id="submitBtn" type="button">提交演示申请</button>
+          <button id="resetBtn" class="secondary" type="button">清空备注</button>
+          <span id="result" style="color:#667085;font-size:11px;margin-left:auto">尚未提交</span>
+        </div>
+        <div id="resultBox" class="result" hidden></div>
+      </div>
+
+      <aside>
+        <div class="card counter-card">
+          <h2>可观察计数</h2>
+          <div class="hint">切换标签或验证 DOM 保留时，此计数应保持不变。</div>
+          <div id="counterValue" class="counter-value">0</div>
+          <div class="counter-label">本会话累计点击</div>
+          <button id="countBtn" class="counter-btn" type="button">增加一次</button>
+          <div class="meta">
+            JS 会话 ID
+            <strong id="sessionId">SID-...</strong>
+            脚本引擎：WebView2 / JavaScript
+          </div>
+        </div>
+
+        <div class="card queue">
+          <div class="queue-title">今日检查队列 <span>合成数据</span></div>
+          <div class="queue-item">
+            <span class="dot active"></span>
+            <div class="queue-main"><b>林芷晴 · 胸部 CT</b>心血管内科 · 08:30</div>
+            <div class="queue-time">进行中</div>
+          </div>
+          <div class="queue-item">
+            <span class="dot"></span>
+            <div class="queue-main"><b>周子墨 · 心电图</b>呼吸内科 · 09:15</div>
+            <div class="queue-time">待检查</div>
+          </div>
+          <div class="queue-item">
+            <span class="dot"></span>
+            <div class="queue-main"><b>陈思远 · 腹部超声</b>消化内科 · 09:45</div>
+            <div class="queue-time">待检查</div>
+          </div>
+          <div class="note-box">此页面没有外部业务请求。输入、计数与下方的 JS 会话 ID 用于验证同一 WebView 实例在标签切换后仍存活。</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const note = document.getElementById('note');
+      const counterValue = document.getElementById('counterValue');
+      const sessionId = 'SID-' + (crypto.randomUUID ? crypto.randomUUID().slice(0, 8) : Math.random().toString(16).slice(2, 10)).toUpperCase();
+      let counter = 0;
+
+      document.getElementById('sessionId').textContent = sessionId;
+      document.getElementById('sessionTop').textContent = sessionId;
+
+      const render = () => { counterValue.textContent = String(counter); };
+
+      document.getElementById('countBtn').addEventListener('click', () => {
+        counter += 1;
+        render();
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        note.value = '';
+        note.focus();
+      });
+
+      document.getElementById('submitBtn').addEventListener('click', () => {
+        const box = document.getElementById('resultBox');
+        const result = document.getElementById('result');
+        const pending = document.getElementById('agree').checked ? '演示申请已生成' : '请先确认已说明注意事项';
+        result.textContent = pending;
+        result.style.color = document.getElementById('agree').checked ? '#0b6b4f' : '#b54708';
+        box.hidden = false;
+        box.textContent = `检查申请「${document.getElementById('exam').value}」已保存到本页会话；会话 ${sessionId}。`;
+      });
+
+      window.portalDemo = {
+        getState: () => ({
+          note: note.value,
+          counter,
+          sessionId,
+          patient: document.getElementById('patient').value,
+          exam: document.getElementById('exam').value,
+          priority: document.getElementById('priority').value,
+          agreed: document.getElementById('agree').checked
+        }),
+        setState: (state) => {
+          if (!state) return;
+          if (typeof state.note === 'string') note.value = state.note;
+          if (Number.isInteger(state.counter)) { counter = state.counter; render(); }
+          if (typeof state.exam === 'string') document.getElementById('exam').value = state.exam;
+          if (typeof state.priority === 'string') document.getElementById('priority').value = state.priority;
+          if (typeof state.agreed === 'boolean') document.getElementById('agree').checked = state.agreed;
+          return window.portalDemo.getState();
+        },
+        increment: () => { counter += 1; render(); return counter; },
+        getSessionId: () => sessionId
+      };
+
+      render();
+      document.getElementById('result').textContent = '就绪 · ' + sessionId;
+    })();
+  </script>
+</body>
+</html>

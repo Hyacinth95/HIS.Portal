@@ -1,0 +1,413 @@
+<UserControl
+    x:Class="HIS.Portal.Modules.Outpatient.VisitDetailView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:HIS.Portal.Modules.Outpatient"
+    x:DataType="vm:VisitDetailViewModel"
+    Background="Transparent">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border
+        Grid.Row="0"
+        Padding="22,12,22,11"
+        Background="White"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <StackPanel Spacing="3">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Classes="H1" Text="接诊详情" />
+            <Border
+                Padding="8,3"
+                VerticalAlignment="Center"
+                Background="#FFF4E5"
+                CornerRadius="10"
+                IsVisible="{Binding IsDirty}">
+              <TextBlock FontSize="11" Foreground="#B54708" Text="● 未保存草稿" />
+            </Border>
+            <Border
+                Padding="8,3"
+                VerticalAlignment="Center"
+                Background="#E9F7F1"
+                CornerRadius="10"
+                IsVisible="{Binding !IsDirty}">
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="已同步" />
+            </Border>
+          </StackPanel>
+
+          <!--  Fixed patient identity summary: stays visible while the record scrolls.  -->
+          <WrapPanel Orientation="Horizontal">
+            <TextBlock
+                x:Name="FixedPatientName"
+                Margin="0,0,10,0"
+                VerticalAlignment="Center"
+                FontSize="15"
+                FontWeight="SemiBold"
+                Text="{Binding PatientName}" />
+            <Border
+                Margin="0,0,10,0"
+                Padding="7,2"
+                VerticalAlignment="Center"
+                Background="#F2F4F7"
+                CornerRadius="9">
+              <TextBlock FontSize="11" Foreground="#475467" Text="{Binding GenderAge}" />
+            </Border>
+            <TextBlock
+                x:Name="FixedVisitNo"
+                Margin="0,0,10,0"
+                VerticalAlignment="Center"
+                FontFamily="Cascadia Mono, Consolas"
+                FontSize="13"
+                FontWeight="SemiBold"
+                Text="{Binding VisitNo}" />
+            <TextBlock
+                x:Name="FixedDepartment"
+                Margin="0,0,10,0"
+                VerticalAlignment="Center"
+                Classes="Muted"
+                Text="{Binding Department}" />
+            <TextBlock
+                Margin="0,0,10,0"
+                VerticalAlignment="Center"
+                Classes="Muted"
+                Text="{Binding Doctor}" />
+            <Border
+                Padding="7,2"
+                VerticalAlignment="Center"
+                Background="#EDF4FC"
+                CornerRadius="9">
+              <TextBlock FontSize="11" Foreground="#0F6CBD" Text="{Binding VisitType}" />
+            </Border>
+          </WrapPanel>
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="8">
+          <TextBlock
+              MaxWidth="112"
+              Margin="0,0,4,0"
+              VerticalAlignment="Center"
+              Classes="Caption"
+              Text="{Binding SavedAtText}"
+              TextTrimming="CharacterEllipsis" />
+          <Button
+              x:Name="DetailSaveButton"
+              AutomationProperties.AutomationId="DetailSaveButton"
+              AutomationProperties.Name="保存接诊详情"
+              Command="{Binding SaveCommand}"
+              Classes="PrimaryButton">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <PathIcon
+                  Width="14"
+                  Height="14"
+                  Data="{StaticResource IconSave}"
+                  Foreground="White" />
+              <TextBlock Foreground="White" Text="保存" />
+            </StackPanel>
+          </Button>
+          <Button
+              x:Name="DetailDiscardButton"
+              AutomationProperties.AutomationId="DetailDiscardButton"
+              AutomationProperties.Name="放弃未保存更改"
+              Command="{Binding DiscardCommand}"
+              Classes="SecondaryButton"
+              Content="放弃更改" />
+          <Button
+              x:Name="DetailCloseButton"
+              AutomationProperties.AutomationId="DetailCloseButton"
+              AutomationProperties.Name="关闭接诊详情"
+              Command="{Binding CloseCommand}"
+              Classes="SecondaryButton">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <PathIcon
+                  Width="13"
+                  Height="13"
+                  Data="{StaticResource IconClose}"
+                  Foreground="#475467" />
+              <TextBlock Text="关闭" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <ScrollViewer
+        x:Name="DetailScroll"
+        Grid.Row="1"
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Auto">
+      <Grid
+          x:Name="DetailBodyGrid"
+          Margin="22,14,22,20"
+          ColumnDefinitions="*,310"
+          ColumnSpacing="16"
+          RowDefinitions="Auto,Auto">
+        <StackPanel x:Name="DetailMainColumn" Spacing="12">
+
+          <!--  Compact summary: keeps the essential read-only facts available while the full
+                basic-information card is collapsed.  -->
+          <Border
+              x:Name="CompactBasicInfoSummary"
+              Padding="14,9"
+              Classes="Card"
+              IsVisible="False">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+              <StackPanel Spacing="2">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock
+                      FontSize="15"
+                      FontWeight="SemiBold"
+                      Text="患者资料" />
+                  <TextBlock
+                      VerticalAlignment="Center"
+                      Classes="Caption"
+                      Text="只读摘要" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Department}" />
+                  <TextBlock Classes="Muted" Text="·" />
+                  <TextBlock Text="{Binding Doctor}" />
+                  <TextBlock Classes="Muted" Text="·" />
+                  <TextBlock Text="{Binding AppointmentTime}" />
+                </StackPanel>
+              </StackPanel>
+              <Button
+                  x:Name="BasicInfoToggleButton"
+                  Grid.Column="1"
+                  AutomationProperties.AutomationId="BasicInfoToggleButton"
+                  AutomationProperties.Name="展开或收起患者资料"
+                  Click="OnToggleBasicInfo"
+                  Classes="SecondaryButton"
+                  Content="展开资料" />
+            </Grid>
+          </Border>
+
+          <Border
+              x:Name="BasicInfoCard"
+              Padding="16"
+              Classes="Card">
+            <StackPanel Spacing="11">
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="H2" Text="基本信息" />
+                <TextBlock
+                    Grid.Column="1"
+                    Classes="Subtle"
+                    Text="只读 · 来自合成仓储" />
+              </Grid>
+              <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="14" RowDefinitions="Auto,Auto" RowSpacing="11">
+                <StackPanel>
+                  <TextBlock Classes="FieldLabel" Text="就诊科室" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Department}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                  <TextBlock Classes="FieldLabel" Text="接诊医生" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Doctor}" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                  <TextBlock Classes="FieldLabel" Text="预约时间" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding AppointmentTime}" />
+                </StackPanel>
+                <StackPanel Grid.Column="3">
+                  <TextBlock Classes="FieldLabel" Text="联系电话" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding Phone}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1">
+                  <TextBlock Classes="FieldLabel" Text="医保类型" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding InsuranceType}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1">
+                  <TextBlock Classes="FieldLabel" Text="就诊号" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding VisitNo}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="2">
+                  <TextBlock Classes="FieldLabel" Text="就诊类型" />
+                  <TextBlock FontWeight="SemiBold" Text="{Binding VisitType}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="3">
+                  <TextBlock Classes="FieldLabel" Text="数据范围" />
+                  <TextBlock FontWeight="SemiBold" Foreground="#0F6CBD" Text="演示合成数据" />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <Border
+              x:Name="RecordCard"
+              Padding="16"
+              Classes="Card">
+            <StackPanel Spacing="12">
+              <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="2">
+                  <TextBlock Classes="H2" Text="病历记录" />
+                  <TextBlock
+                      x:Name="RecordHeaderHint"
+                      Classes="Caption"
+                      Text="编辑后立即进入未保存状态；切换标签不会丢失草稿。" />
+                </StackPanel>
+                <Border
+                    Grid.Column="1"
+                    Padding="8,3"
+                    VerticalAlignment="Top"
+                    Background="#FFF4E5"
+                    CornerRadius="10"
+                    IsVisible="{Binding IsDirty}">
+                  <TextBlock FontSize="11" Foreground="#B54708" Text="待保存" />
+                </Border>
+              </Grid>
+
+              <StackPanel Spacing="5">
+                <TextBlock Classes="FieldLabel" Text="主诉" />
+                <TextBox
+                    x:Name="ChiefComplaintBox"
+                    MinHeight="60"
+                    AcceptsReturn="True"
+                    AutomationProperties.AutomationId="ChiefComplaintBox"
+                    AutomationProperties.Name="主诉"
+                    Classes="FieldTextBox"
+                    Text="{Binding ChiefComplaint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    PlaceholderText="请输入主诉" />
+              </StackPanel>
+
+              <StackPanel Spacing="5">
+                <TextBlock Classes="FieldLabel" Text="初步诊断" />
+                <TextBox
+                    MinHeight="60"
+                    AcceptsReturn="True"
+                    Classes="FieldTextBox"
+                    Text="{Binding Diagnosis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    PlaceholderText="请输入诊断" />
+              </StackPanel>
+
+              <StackPanel Spacing="5">
+                <TextBlock Classes="FieldLabel" Text="接诊备注" />
+                <TextBox
+                    MinHeight="88"
+                    AcceptsReturn="True"
+                    Classes="FieldTextBox"
+                    Text="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    PlaceholderText="记录检查、处置或随访建议" />
+              </StackPanel>
+
+              <Border Padding="10,8" Background="#F8FAFC" CornerRadius="6">
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                  <PathIcon
+                      Width="13"
+                      Height="13"
+                      VerticalAlignment="Center"
+                      Data="{StaticResource IconInfo}"
+                      Foreground="#667085" />
+                  <TextBlock
+                      VerticalAlignment="Center"
+                      FontSize="11"
+                      Foreground="#667085"
+                      Text="{Binding SaveState}" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Border>
+
+        </StackPanel>
+
+        <StackPanel x:Name="DetailSidebar" Grid.Column="1" Spacing="12">
+          <Border Padding="16" Classes="Card">
+            <StackPanel Spacing="12">
+              <TextBlock Classes="H2" Text="本次就诊" />
+              <StackPanel Spacing="5">
+                <TextBlock Classes="FieldLabel" Text="接诊状态" />
+                <ComboBox
+                    ItemsSource="{Binding StatusOptions}"
+                    SelectedItem="{Binding Status, Mode=TwoWay}" />
+              </StackPanel>
+              <StackPanel Spacing="5">
+                <TextBlock Classes="FieldLabel" Text="优先级" />
+                <ComboBox
+                    ItemsSource="{Binding PriorityOptions}"
+                    SelectedItem="{Binding Priority, Mode=TwoWay}" />
+              </StackPanel>
+              <Separator Background="#EDF0F4" />
+              <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="Caption" Text="当前草稿" />
+                <TextBlock
+                    Grid.Column="1"
+                    FontSize="11"
+                    FontWeight="SemiBold"
+                    Foreground="#0F6CBD"
+                    IsVisible="{Binding IsDirty}"
+                    Text="有未保存更改" />
+                <TextBlock
+                    Grid.Column="1"
+                    FontSize="11"
+                    FontWeight="SemiBold"
+                    Foreground="#0B6B4F"
+                    IsVisible="{Binding !IsDirty}"
+                    Text="无更改" />
+              </Grid>
+              <TextBlock
+                  FontSize="11"
+                  Foreground="#667085"
+                  Text="状态和优先级属于同一草稿；保存后才会写入内存仓储。"
+                  TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+
+          <Border Padding="16" Classes="Card">
+            <StackPanel Spacing="10">
+              <TextBlock Classes="H2" Text="生命周期" />
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <TextBlock Classes="Symbol" FontSize="12" Foreground="#0B6B4F" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="页面实例在标签切换期间保持存活" TextWrapping="Wrap" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <TextBlock Classes="Symbol" FontSize="12" Foreground="#0B6B4F" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="关闭时若存在草稿，先询问保存 / 放弃 / 取消" TextWrapping="Wrap" />
+              </Grid>
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <TextBlock Classes="Symbol" FontSize="12" Foreground="#0B6B4F" Text="&#xE73E;" />
+                <TextBlock Grid.Column="1" FontSize="11" Foreground="#475467" Text="同一就诊号重复打开时只激活已有标签" TextWrapping="Wrap" />
+              </Grid>
+              <Border Margin="0,4,0,0" Padding="10" Background="#F8FAFC" CornerRadius="6">
+                <TextBlock
+                    FontSize="11"
+                    Foreground="#667085"
+                    Text="提示：按 Ctrl+F4 可关闭当前标签；按 Ctrl+Tab 可循环切换。"
+                    TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+          </Border>
+
+          <Border Padding="16" Classes="SoftPanel">
+            <StackPanel Spacing="7">
+              <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#475467" Text="演示数据声明" />
+              <TextBlock
+                  FontSize="11"
+                  Foreground="#667085"
+                  Text="本页不接入生产 NestJS / Oracle，不执行旧 DLL 或 COM。保存仅更新进程内内存仓储。"
+                  TextWrapping="Wrap" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+    <Border
+        Grid.Row="2"
+        Padding="22,7"
+        Background="#FBFCFE"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Classes="Caption" Text="门诊电子病历 · M1 演示表单" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12">
+          <TextBlock Classes="Caption" Text="{Binding Department}" />
+          <TextBlock Classes="Caption" Text="{Binding Doctor}" />
+          <TextBlock Classes="Caption" Text="{Binding VisitNo}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</UserControl>

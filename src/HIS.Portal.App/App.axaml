@@ -1,0 +1,57 @@
+<Application
+    x:Class="HIS.Portal.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluentUi="using:AvaloniaFluentUI.Styling"
+    RequestedThemeVariant="Light">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <FontFamily x:Key="DefaultFontFamily">Microsoft YaHei UI, Microsoft YaHei, Segoe UI, sans-serif</FontFamily>
+      <FontFamily x:Key="SymbolFontFamily">Segoe MDL2 Assets, Segoe Fluent Icons</FontFamily>
+
+      <Color x:Key="PortalAccentColor">#0F6CBD</Color>
+      <Color x:Key="PortalAccentDarkColor">#0B5595</Color>
+      <Color x:Key="PortalAccentSoftColor">#E8F2FC</Color>
+      <Color x:Key="PortalBackgroundColor">#F3F5F8</Color>
+      <Color x:Key="PortalSurfaceColor">#FFFFFF</Color>
+      <Color x:Key="PortalBorderColor">#E3E8EF</Color>
+      <Color x:Key="PortalTextColor">#172033</Color>
+      <Color x:Key="PortalMutedColor">#5B6675</Color>
+      <Color x:Key="PortalSubtleColor">#667085</Color>
+
+      <SolidColorBrush x:Key="PortalAccentBrush" Color="{StaticResource PortalAccentColor}" />
+      <SolidColorBrush x:Key="PortalAccentDarkBrush" Color="{StaticResource PortalAccentDarkColor}" />
+      <SolidColorBrush x:Key="PortalAccentSoftBrush" Color="{StaticResource PortalAccentSoftColor}" />
+      <SolidColorBrush x:Key="PortalBackgroundBrush" Color="{StaticResource PortalBackgroundColor}" />
+      <SolidColorBrush x:Key="PortalSurfaceBrush" Color="{StaticResource PortalSurfaceColor}" />
+      <SolidColorBrush x:Key="PortalBorderBrush" Color="{StaticResource PortalBorderColor}" />
+      <SolidColorBrush x:Key="PortalTextBrush" Color="{StaticResource PortalTextColor}" />
+      <SolidColorBrush x:Key="PortalMutedBrush" Color="{StaticResource PortalMutedColor}" />
+      <SolidColorBrush x:Key="PortalSubtleBrush" Color="{StaticResource PortalSubtleColor}" />
+
+      <StreamGeometry x:Key="IconHome">M3 10.8 12 3l9 7.8V21h-6.2v-6.3H9.2V21H3V10.8Z</StreamGeometry>
+      <StreamGeometry x:Key="IconList">M4 5h16v2.2H4V5Zm0 5.9h16v2.2H4v-2.2Zm0 5.9h16V19H4v-2.2Z</StreamGeometry>
+      <StreamGeometry x:Key="IconWeb">M12 2.2c5.4 0 9.8 4.4 9.8 9.8s-4.4 9.8-9.8 9.8S2.2 17.4 2.2 12 6.6 2.2 12 2.2Zm0 2.1c-1.1 0-2.4 2.7-2.4 7.7s1.3 7.7 2.4 7.7 2.4-2.7 2.4-7.7-1.3-7.7-2.4-7.7Zm-7.7 6.6h15.4v2.2H4.3v-2.2Z</StreamGeometry>
+      <StreamGeometry x:Key="IconHeart">M12 20.3 3.8 12.6A4.9 4.9 0 0 1 12 5.6a4.9 4.9 0 0 1 8.2 7l-8.2 7.7Z</StreamGeometry>
+      <StreamGeometry x:Key="IconClock">M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 0 1 0-19Zm0 2a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15Zm-1 2.8h2v4.6l3 2.1-1.2 1.7-3.8-2.7V7.3Z</StreamGeometry>
+      <StreamGeometry x:Key="IconSearch">M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.3 4.3-1.5 1.5-4.3-4.3A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z</StreamGeometry>
+      <StreamGeometry x:Key="IconChevronDown">M5.2 8.6 12 15.4l6.8-6.8 1.5 1.5L12 18.4 3.7 10.1l1.5-1.5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconChevronRight">M8.6 5.2 15.4 12l-6.8 6.8-1.5-1.5L12.4 12 7.1 6.7l1.5-1.5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconSave">M5 3h11.6L21 7.4V21H3V5a2 2 0 0 1 2-2Zm1 2v4h9V5H6Zm-1 8v6h14v-6H5Zm2 2h4v2H7v-2Z</StreamGeometry>
+      <StreamGeometry x:Key="IconRefresh">M12 4a8 8 0 0 1 7.4 5H22l-4.2 4.2L13.6 9h3.1A6 6 0 1 0 18 13h2a8 8 0 1 1-8-9Z</StreamGeometry>
+      <StreamGeometry x:Key="IconInfo">M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 0 1 0-19Zm0 2a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15Zm-1 5.3h2v6.4h-2V9.8Zm0-3.3h2v2h-2v-2Z</StreamGeometry>
+      <StreamGeometry x:Key="IconPerson">M12 3a4.2 4.2 0 1 1 0 8.4A4.2 4.2 0 0 1 12 3Zm0 10.2c4.3 0 7.8 2 7.8 4.5V21H4.2v-3.3c0-2.5 3.5-4.5 7.8-4.5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconSettings">M12 8.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6Zm8.2 3.8c0-.5 0-1-.1-1.5l2-1.5-2-3.4-2.3.9c-.8-.6-1.7-1.1-2.6-1.4L14.8 3H9.2l-.4 2.1c-1 .3-1.8.8-2.6 1.4l-2.3-.9-2 3.4 2 1.5a8 8 0 0 0 0 3l-2 1.5 2 3.4 2.3-.9c.8.6 1.7 1.1 2.6 1.4l.4 2.1h5.6l.4-2.1c1-.3 1.8-.8 2.6-1.4l2.3.9 2-3.4-2-1.5c.1-.5.1-1 .1-1.5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconClose">M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconChevronUp">M5.2 15.4 12 8.6l6.8 6.8-1.5 1.5L12 11.6l-5.3 5.3-1.5-1.5Z</StreamGeometry>
+      <StreamGeometry x:Key="IconArrowRight">M13.2 4.6 20.6 12l-7.4 7.4-1.4-1.4 5-5H3.5v-2h13.3l-5-5 1.4-1.4Z</StreamGeometry>
+      <StreamGeometry x:Key="IconChart">M4 4h2v14h14v2H4V4Zm4 8h3v5H8v-5Zm5-4h3v9h-3V8Zm5-3h3v12h-3V5Z</StreamGeometry>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <fluentUi:AvaloniaFluentTheme />
+    <StyleInclude Source="avares://HIS.Portal.App/Styles/PortalStyles.axaml" />
+  </Application.Styles>
+</Application>

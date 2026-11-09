@@ -1,0 +1,264 @@
+using System;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
+using Avalonia.Controls;
+using Avalonia.Controls.Metadata;
+using Avalonia.Controls.Primitives;
+using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Metadata;
+
+namespace AvaloniaFluentUI.Controls;
+
+/// <summary>
+/// Abstract base class for toast / popup info bar controls.
+/// Provides common styled properties (Title, IsClosable, OffsetX/Y, Duration, Content),
+/// slide &amp; fade animation helpers, auto-close timer, and close-button wiring.
+/// Concrete subclasses only need to declare their own Severity / Position enums
+/// and register them as <see cref="StyledProperty{T}"/> fields.
+/// </summary>
+[TemplatePart(Name = PART_CLOSE_BUTTON, Type = typeof(Button))]
+[TemplatePart(Name = PART_LAYOUT, Type = typeof(Grid))]
+public abstract class InfoBarBase : TemplatedControl
+{
+    public static readonly StyledProperty<string> TitleProperty =
+        AvaloniaProperty.Register<InfoBarBase, string>(nameof(Title));
+
+    public static readonly StyledProperty<bool> IsClosableProperty =
+        AvaloniaProperty.Register<InfoBarBase, bool>(nameof(IsClosable));
+
+    /// <summary>Horizontal pixel offset — animated via <see cref="DoubleTransition"/>.</summary>
+    public static readonly StyledProperty<double> OffsetXProperty =
+        AvaloniaProperty.Register<InfoBarBase, double>(nameof(OffsetX));
+
+    /// <summary>Vertical pixel offset — animated via <see cref="DoubleTransition"/>.</summary>
+    public static readonly StyledProperty<double> OffsetYProperty =
+        AvaloniaProperty.Register<InfoBarBase, double>(nameof(OffsetY));
+
+    public static readonly StyledProperty<int> DurationProperty =
+        AvaloniaProperty.Register<InfoBarBase, int>(nameof(Duration));
+
+    public static readonly StyledProperty<object?> ContentProperty =
+        AvaloniaProperty.Register<InfoBarBase, object?>(nameof(Content));
+
+    public static readonly StyledProperty<InfoBarSeverity> SeverityProperty =
+        AvaloniaProperty.Register<InfoBarBase, InfoBarSeverity>(nameof(Severity));
+
+    public static readonly StyledProperty<InfoBarPosition> PositionProperty =
+        AvaloniaProperty.Register<InfoBarBase, InfoBarPosition>(nameof(Position), InfoBarPosition.TopRight);
+
+    /// <summary>
+    ///     Defines the <see cref="Orientation" /> property.
+    /// </summary>
+    public static readonly StyledProperty<Orientation> OrientationProperty =
+        AvaloniaProperty.Register<InfoBarBase, Orientation>(nameof(Orientation), Orientation.Vertical);
+
+    /// <summary>
+    /// 获取或设置消息条内容的布局方向
+    /// </summary>
+    public Orientation Orientation
+    {
+        get => GetValue(OrientationProperty);
+        set => SetValue(OrientationProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置消息条的弹出位置
+    /// </summary>
+    public InfoBarPosition Position
+    {
+        get => GetValue(PositionProperty);
+        set => SetValue(PositionProperty, value);
+    }
+    
+    /// <summary>
+    /// 获取或设置消息条的信息等级
+    /// </summary>
+    public InfoBarSeverity Severity
+    {
+        get => GetValue(SeverityProperty);
+        set => SetValue(SeverityProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置消息条的标题
+    /// </summary>
+    public string Title
+    {
+        get => GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置消息条是否可以手动关闭
+    /// </summary>
+    public bool IsClosable
+    {
+        get => GetValue(IsClosableProperty);
+        set => SetValue(IsClosableProperty, value);
+    }
+
+    public double OffsetX
+    {
+        get => GetValue(OffsetXProperty);
+        set => SetValue(OffsetXProperty, value);
+    }
+
+    public double OffsetY
+    {
+        get => GetValue(OffsetYProperty);
+        set => SetValue(OffsetYProperty, value);
+    }
+
+    /// <summary>
+    /// 获取或设置消息条弹出的持续时间
+    /// </summary>
+    public int Duration
+    {
+        get => GetValue(DurationProperty);
+        set => SetValue(DurationProperty, value);
+    }
+
+    [Content]
+    public object? Content
+    {
+        get => GetValue(ContentProperty);
+        set => SetValue(ContentProperty, value);
+    }
+    
+    /// <summary>Duration of slide &amp; fade animations in ms.</summary>
+    public double AnimationDuration { get; set; } = 300;
+
+    /// <summary>Raised after the close-out animation completes.</summary>
+    public event EventHandler? Closed;
+
+    private const string PART_CLOSE_BUTTON = "PART_CloseButton";
+    private const string PART_LAYOUT = "PART_Layout";
+
+    private Button? _closeButton;
+
+    /// <summary>TranslateTransform driven by <see cref="OffsetX"/> / <see cref="OffsetY"/>.</summary>
+    private readonly TranslateTransform _translateTransform = new();
+
+    protected InfoBarBase()
+    {
+        Opacity = 0;
+        RenderTransform = _translateTransform;
+    }
+
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+        StartAutoClose();
+    }
+
+    /// <summary>
+    /// 获取消息条的列定义
+    /// </summary>
+    /// <returns></returns>
+    protected abstract ColumnDefinitions GetColumnDefinitions();
+    
+    /// <summary>
+    /// 获取消息条的行定义
+    /// </summary>
+    /// <returns></returns>
+    protected abstract RowDefinitions GetRowDefinitions();
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        _closeButton?.Click -= OnCloseButtonClick;
+
+        _closeButton = e.NameScope.Find<Button>(PART_CLOSE_BUTTON);
+        var layout  = e.NameScope.Find<Grid>(PART_LAYOUT);
+
+        if (layout != null)
+        {
+            layout.RowDefinitions = GetRowDefinitions();
+            layout.ColumnDefinitions = GetColumnDefinitions();
+        }
+
+        _closeButton?.Click += OnCloseButtonClick;
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == OffsetXProperty)
+        {
+            _translateTransform.X = OffsetX;
+        }
+        else if (change.Property == OffsetYProperty)
+        {
+            _translateTransform.Y = OffsetY;
+        }
+    }
+
+    private void OnCloseButtonClick(object? sender, RoutedEventArgs e)
+    {
+        Closed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Open animation: places the control off-screen at (fromX, fromY), waits for layout,
+    /// then transitions to the on-screen position (toX, toY).
+    /// </summary>
+    public virtual void Run(double fromX, double fromY, double toX, double toY)
+    {
+        OffsetX = fromX;
+        OffsetY = fromY;
+
+        var duration = TimeSpan.FromMilliseconds(AnimationDuration);
+        Transitions = new Transitions
+        {
+            new DoubleTransition
+            {
+                Property = OffsetXProperty,
+                Duration = duration,
+                Easing = new CubicEaseOut(),
+            },
+            new DoubleTransition
+            {
+                Property = OffsetYProperty,
+                Duration = duration,
+                Easing = new CubicEaseOut(),
+            },
+        };
+
+        OffsetX = toX;
+        OffsetY = toY;
+        Opacity = 1;
+    }
+
+    /// <summary>
+    /// Reposition the control to a new stacked position (animated via transitions).
+    /// </summary>
+    public void UpdatePosition(double x, double y)
+    {
+        OffsetX = x;
+        OffsetY = y;
+    }
+
+    /// <summary>
+    /// Close animation: slides to (x, y) and fades out.
+    /// Returns a Task that completes after the animation duration.
+    /// </summary>
+    public virtual async Task CloseAsync(double x, double y)
+    {
+        OffsetX = x;
+        OffsetY = y;
+        await Task.Delay((int)AnimationDuration + 24);
+    }
+
+    private async void StartAutoClose()
+    {
+        if (Duration >= 0)
+        {
+            await Task.Delay(Duration);
+            Closed?.Invoke(this, EventArgs.Empty);
+        }
+    }
+}

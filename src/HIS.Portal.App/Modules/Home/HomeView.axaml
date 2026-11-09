@@ -1,0 +1,456 @@
+<UserControl
+    x:Class="HIS.Portal.Modules.Home.HomeView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:contracts="using:HIS.Portal.Contracts"
+    xmlns:vm="using:HIS.Portal.Modules.Home"
+    x:DataType="vm:HomeViewModel"
+    Background="Transparent">
+
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="24,18,24,24" Spacing="14">
+
+      <!--  Compact task banner: keeps the primary next-patient action above the fold.  -->
+      <Border Padding="20,14" ClipToBounds="True" CornerRadius="10">
+        <Border.Background>
+          <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Offset="0" Color="#0F6CBD" />
+            <GradientStop Offset="0.58" Color="#176FB8" />
+            <GradientStop Offset="1" Color="#0B4E86" />
+          </LinearGradientBrush>
+        </Border.Background>
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+          <StackPanel VerticalAlignment="Center" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Border Padding="8,3" Background="#26000000" CornerRadius="10">
+                <TextBlock FontSize="11" Foreground="White" Text="M1 演示环境 · 合成数据" />
+              </Border>
+              <TextBlock VerticalAlignment="Center" FontSize="11" Foreground="#EAF4FD" Text="{Binding TodayText}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="12">
+              <TextBlock
+                  FontSize="22"
+                  FontWeight="SemiBold"
+                  Foreground="White"
+                  Text="{Binding Greeting}" />
+              <TextBlock
+                  MaxWidth="330"
+                  VerticalAlignment="Center"
+                  FontSize="11"
+                  Foreground="#EAF4FD"
+                  Text="{Binding NextWaitingText}"
+                  TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <Button
+                  x:Name="NextWaitingButton"
+                  MinHeight="32"
+                  Padding="14,5"
+                  AutomationProperties.AutomationId="NextWaitingButton"
+                  AutomationProperties.Name="打开下一位待接诊患者"
+                  Background="White"
+                  BorderThickness="0"
+                  Command="{Binding OpenFirstWaitingVisitCommand}"
+                  CornerRadius="6"
+                  Foreground="#0B5595"
+                  FontWeight="SemiBold">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <PathIcon
+                      Width="14"
+                      Height="14"
+                      Data="{StaticResource IconArrowRight}"
+                      Foreground="#0B5595" />
+                  <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="#0B5595" Text="打开下一位待接诊患者" />
+                </StackPanel>
+              </Button>
+              <Button
+                  MinHeight="32"
+                  Padding="14,5"
+                  Background="#22000000"
+                  BorderBrush="#66FFFFFF"
+                  BorderThickness="1"
+                  Command="{Binding OpenWebDemoCommand}"
+                  CornerRadius="6"
+                  Foreground="White">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <PathIcon
+                      Width="14"
+                      Height="14"
+                      Data="{StaticResource IconWeb}"
+                      Foreground="White" />
+                  <TextBlock FontSize="12" Foreground="White" Text="检查申请 Web 演示" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel
+              Grid.Column="1"
+              VerticalAlignment="Center"
+              Orientation="Horizontal"
+              Spacing="20">
+            <StackPanel Spacing="1">
+              <TextBlock FontSize="11" Foreground="#EAF4FD" Text="今日预约" />
+              <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="White" Text="{Binding TodayVisits}" />
+            </StackPanel>
+            <StackPanel Spacing="1">
+              <TextBlock FontSize="11" Foreground="#EAF4FD" Text="待接诊" />
+              <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="#FFFFFF" Text="{Binding WaitingVisits}" />
+            </StackPanel>
+            <StackPanel Spacing="1">
+              <TextBlock FontSize="11" Foreground="#EAF4FD" Text="加急 / 优先" />
+              <TextBlock FontSize="22" FontWeight="SemiBold" Foreground="White" Text="{Binding PriorityVisits}" />
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <!--  Compact statistics  -->
+      <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
+        <Border Padding="14,10" Classes="Card">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="Caption" Text="今日预约" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding TodayVisits}" />
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="较昨日 +6" />
+            </StackPanel>
+            <Border
+                Grid.Column="1"
+                Width="30"
+                Height="30"
+                Background="#EAF4FD"
+                CornerRadius="7">
+              <PathIcon
+                  Width="15"
+                  Height="15"
+                  Data="{StaticResource IconList}"
+                  Foreground="#0F6CBD" />
+            </Border>
+          </Grid>
+        </Border>
+        <Border Grid.Column="1" Padding="14,10" Classes="Card">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="Caption" Text="待接诊" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding WaitingVisits}" />
+              <TextBlock FontSize="11" Foreground="#B54708" Text="请优先处理加急患者" />
+            </StackPanel>
+            <Border
+                Grid.Column="1"
+                Width="30"
+                Height="30"
+                Background="#FFF4E5"
+                CornerRadius="7">
+              <PathIcon
+                  Width="15"
+                  Height="15"
+                  Data="{StaticResource IconClock}"
+                  Foreground="#B54708" />
+            </Border>
+          </Grid>
+        </Border>
+        <Border Grid.Column="2" Padding="14,10" Classes="Card">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="Caption" Text="已完成" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="{Binding CompletedVisits}" />
+              <TextBlock FontSize="11" Foreground="#0B6B4F" Text="记录均写入内存仓储" />
+            </StackPanel>
+            <Border
+                Grid.Column="1"
+                Width="30"
+                Height="30"
+                Background="#E9F7F1"
+                CornerRadius="7">
+              <PathIcon
+                  Width="15"
+                  Height="15"
+                  Data="{StaticResource IconChart}"
+                  Foreground="#0B6B4F" />
+            </Border>
+          </Grid>
+        </Border>
+        <Border Grid.Column="3" Padding="14,10" Classes="Card">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Spacing="2">
+              <TextBlock Classes="Caption" Text="WebView 任务" />
+              <TextBlock FontSize="20" FontWeight="SemiBold" Text="4" />
+              <TextBlock FontSize="11" Foreground="#0F6CBD" Text="本地 HTML · 无外部网络" />
+            </StackPanel>
+            <Border
+                Grid.Column="1"
+                Width="30"
+                Height="30"
+                Background="#EAF4FD"
+                CornerRadius="7">
+              <PathIcon
+                  Width="15"
+                  Height="15"
+                  Data="{StaticResource IconWeb}"
+                  Foreground="#0F6CBD" />
+            </Border>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <!--  Task-first row: recent visits and the waiting queue are both above the fold.  -->
+      <Grid ColumnDefinitions="1.25*,1*" ColumnSpacing="14">
+        <Border Padding="16" Classes="Card">
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Classes="H2" Text="最近接诊" />
+              <TextBlock
+                  Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Classes="Subtle"
+                  Text="合成患者" />
+            </Grid>
+            <ItemsControl x:Name="RecentVisitsList" ItemsSource="{Binding RecentVisits}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="contracts:VisitRecord">
+                  <Button
+                      Margin="0,0"
+                      Padding="8,6"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Click="OnRecentVisitClick"
+                      Tag="{Binding}">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="10">
+                      <Border
+                          Width="28"
+                          Height="28"
+                          Background="#EDF4FC"
+                          CornerRadius="14">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="#0F6CBD"
+                            Text="{Binding Initials}" />
+                      </Border>
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding PatientName}" />
+                        <TextBlock Classes="Caption" Text="{Binding VisitNo}" />
+                      </StackPanel>
+                      <TextBlock
+                          Grid.Column="2"
+                          VerticalAlignment="Center"
+                          Classes="Caption"
+                          Text="{Binding Department}" />
+                      <Border
+                          Grid.Column="3"
+                          Padding="7,2"
+                          VerticalAlignment="Center"
+                          Background="#F2F4F7"
+                          CornerRadius="9">
+                        <TextBlock FontSize="11" Foreground="#475467" Text="{Binding Status}" />
+                      </Border>
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Padding="16" Classes="Card">
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Classes="H2" Text="待处理患者" />
+              <Border
+                  Grid.Column="1"
+                  Padding="7,2"
+                  Background="#FFF4E5"
+                  CornerRadius="9">
+                <TextBlock FontSize="11" Foreground="#B54708" Text="{Binding WaitingBadgeText}" />
+              </Border>
+            </Grid>
+            <ItemsControl x:Name="WaitingQueueList" ItemsSource="{Binding WaitingQueue}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="contracts:VisitRecord">
+                  <Button
+                      Margin="0,0"
+                      Padding="8,6"
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Background="Transparent"
+                      BorderThickness="0"
+                      Click="OnRecentVisitClick"
+                      Tag="{Binding}">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9">
+                      <Border
+                          Width="28"
+                          Height="28"
+                          Background="#FFF4E5"
+                          CornerRadius="14">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            FontWeight="SemiBold"
+                            Foreground="#B54708"
+                            Text="{Binding Initials}" />
+                      </Border>
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding PatientName}" />
+                        <TextBlock
+                            Classes="Caption"
+                            Text="{Binding Department}"
+                            TextTrimming="CharacterEllipsis" />
+                      </StackPanel>
+                      <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="1">
+                        <TextBlock HorizontalAlignment="Right" FontSize="11" Foreground="#B54708" Text="{Binding Priority}" />
+                        <TextBlock HorizontalAlignment="Right" Classes="Caption" Text="{Binding AppointmentTime}" />
+                      </StackPanel>
+                    </Grid>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Classes="Caption" Text="按待接诊顺序排列；打开后仍复用同一 PageKey。" TextWrapping="Wrap" />
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <!--  Secondary workflow and lifecycle explanation  -->
+      <Grid ColumnDefinitions="1.35*,1*" ColumnSpacing="14">
+        <Border Padding="16" Classes="Card">
+          <StackPanel Spacing="10">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2">
+                <TextBlock Classes="H2" Text="常用入口" />
+                <TextBlock Classes="Caption" Text="点击即可在当前窗口打开业务标签" />
+              </StackPanel>
+              <TextBlock
+                  Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Classes="Subtle"
+                  Text="快捷工作流" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+              <Button Classes="QuickCard" Command="{Binding OpenVisitListCommand}">
+                <Border Padding="12" BorderBrush="#E4EAF2" BorderThickness="1" CornerRadius="8">
+                  <StackPanel Spacing="6">
+                    <Border
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Left"
+                        Background="#EAF4FD"
+                        CornerRadius="7">
+                      <PathIcon
+                          Width="16"
+                          Height="16"
+                          Data="{StaticResource IconList}"
+                          Foreground="#0F6CBD" />
+                    </Border>
+                    <TextBlock FontWeight="SemiBold" Text="门诊接诊" />
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="#5B6675"
+                        Text="搜索、筛选 30 条合成记录"
+                        TextWrapping="Wrap" />
+                    <TextBlock FontSize="11" Foreground="#0F6CBD" Text="打开列表 →" />
+                  </StackPanel>
+                </Border>
+              </Button>
+
+              <Button
+                  Grid.Column="1"
+                  Classes="QuickCard"
+                  Command="{Binding OpenFirstWaitingVisitCommand}">
+                <Border Padding="12" BorderBrush="#E4EAF2" BorderThickness="1" CornerRadius="8">
+                  <StackPanel Spacing="6">
+                    <Border
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Left"
+                        Background="#FFF4E5"
+                        CornerRadius="7">
+                      <PathIcon
+                          Width="16"
+                          Height="16"
+                          Data="{StaticResource IconPerson}"
+                          Foreground="#B54708" />
+                    </Border>
+                    <TextBlock FontWeight="SemiBold" Text="下一位患者" />
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="#5B6675"
+                        Text="按业务 ID 打开唯一接诊详情"
+                        TextWrapping="Wrap" />
+                    <TextBlock FontSize="11" Foreground="#0F6CBD" Text="进入详情 →" />
+                  </StackPanel>
+                </Border>
+              </Button>
+
+              <Button
+                  Grid.Column="2"
+                  Classes="QuickCard"
+                  Command="{Binding OpenWebDemoCommand}">
+                <Border Padding="12" BorderBrush="#E4EAF2" BorderThickness="1" CornerRadius="8">
+                  <StackPanel Spacing="6">
+                    <Border
+                        Width="32"
+                        Height="32"
+                        HorizontalAlignment="Left"
+                        Background="#E9F7F1"
+                        CornerRadius="7">
+                      <PathIcon
+                          Width="16"
+                          Height="16"
+                          Data="{StaticResource IconWeb}"
+                          Foreground="#0B6B4F" />
+                    </Border>
+                    <TextBlock FontWeight="SemiBold" Text="Web 检查申请" />
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="#5B6675"
+                        Text="真实 NativeWebView 加载本地表单"
+                        TextWrapping="Wrap" />
+                    <TextBlock FontSize="11" Foreground="#0F6CBD" Text="打开演示 →" />
+                  </StackPanel>
+                </Border>
+              </Button>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1" Padding="16" Classes="Card">
+          <StackPanel Spacing="8">
+            <Grid ColumnDefinitions="*,Auto">
+              <StackPanel Spacing="2">
+                <TextBlock Classes="H2" Text="生命周期说明" />
+                <TextBlock Classes="Caption" Text="实现边界，不影响日常操作" />
+              </StackPanel>
+              <Border
+                  Grid.Column="1"
+                  Padding="7,2"
+                  Background="#EAF4FD"
+                  CornerRadius="9">
+                <TextBlock FontSize="11" Foreground="#0F6CBD" Text="已验证" />
+              </Border>
+            </Grid>
+            <StackPanel Spacing="6">
+              <TextBlock FontSize="11" Foreground="#475467" Text="• 单窗口标签，业务 View 常驻 PageHost" TextWrapping="Wrap" />
+              <TextBlock FontSize="11" Foreground="#475467" Text="• 同一业务 ID 仅保留一个标签" TextWrapping="Wrap" />
+              <TextBlock FontSize="11" Foreground="#475467" Text="• Web DOM 与会话随标签切换保留" TextWrapping="Wrap" />
+              <TextBlock FontSize="11" Foreground="#475467" Text="• 关闭时按保存 / 放弃 / 取消三态处理" TextWrapping="Wrap" />
+            </StackPanel>
+            <Border Padding="10" Background="#F8FAFC" CornerRadius="6">
+              <TextBlock
+                  FontSize="11"
+                  Foreground="#5B6675"
+                  Text="全部为本地合成数据，不访问 NestJS、Oracle 或旧 DLL。"
+                  TextWrapping="Wrap" />
+            </Border>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

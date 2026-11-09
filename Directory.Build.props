@@ -1,0 +1,14 @@
+<Project>
+
+  <!--
+    All generated build output for HIS.Portal and its vendored Fluent UI project stays inside
+    this directory. The upstream Avalonia-Fluent-UI checkout is never an output target.
+  -->
+  <PropertyGroup>
+    <ArtifactsPath>$(MSBuildThisFileDirectory)artifacts</ArtifactsPath>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <NuGetAudit>false</NuGetAudit>
+    <RestoreIgnoreFailedSources>true</RestoreIgnoreFailedSources>
+  </PropertyGroup>
+
+</Project>

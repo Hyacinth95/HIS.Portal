@@ -1,0 +1,107 @@
+using System;
+using System.ComponentModel;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using AvaloniaFluentUI.Locale;
+
+namespace AvaloniaFluentUI.Controls;
+
+/// <summary>
+///     Colour picker dialog. Inherits <see cref="ContentDialog" /> so it can be
+///     shown directly. The body hosts a <see cref="FluentColorView" />.
+/// </summary>
+public class ColorDialog : ContentDialog
+{
+    /// <summary>
+    ///     Defines the <see cref="Color" /> property.
+    /// </summary>
+    public static readonly StyledProperty<Color> ColorProperty =
+        FluentColorView.ColorProperty.AddOwner<ColorDialog>();
+
+    /// <summary>
+    ///     Defines the <see cref="ColorSpectrumShape" /> property.
+    /// </summary>
+    public static readonly StyledProperty<ColorSpectrumShape> ColorSpectrumShapeProperty =
+        FluentColorView.ColorSpectrumShapeProperty.AddOwner<ColorDialog>();
+
+    /// <summary>
+    /// 获取或设置当前色彩光谱形状
+    /// </summary>
+    public ColorSpectrumShape ColorSpectrumShape
+    {
+        get => GetValue(ColorSpectrumShapeProperty);
+        set => SetValue(ColorSpectrumShapeProperty, value);
+    }
+    
+    /// <summary>
+    /// 获取或设置当前颜色
+    /// </summary>
+    public Color Color
+    {
+        get => GetValue(ColorProperty);
+        set => SetValue(ColorProperty, value);
+    }
+    
+    public ColorDialog()
+    {
+        ColorView = new FluentColorView();
+        
+        DefaultButton = ContentDialogButton.Primary;
+        Content = ColorView;
+
+        SetText();
+        LocalizationService.Instance.PropertyChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        SetText();
+    }
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        if (change.Property == ColorSpectrumShapeProperty)
+        {
+            ColorView.ColorSpectrumShape = ColorSpectrumShape;
+        }
+    }
+
+    private void SetText()
+    {
+        Title = LocalizationService.Instance.GetString("ChooseColor");
+        PrimaryButtonText = LocalizationService.Instance.GetString("Confirm");
+        CloseButtonText = LocalizationService.Instance.GetString("Cancel");
+    }
+
+    protected override Type StyleKeyOverride => typeof(ContentDialog);
+
+    /// <summary>
+    ///     Raised when the user clicks Confirm, providing the final picked colour.
+    /// </summary>
+    public event EventHandler<ColorChangedEventArgs>? ColorChanged;
+
+    public FluentColorView ColorView { get; }
+    
+    protected override void OnPrimaryButtonClick(ContentDialogButtonClickEventArgs args)
+    {
+        base.OnPrimaryButtonClick(args);
+
+        if (Color != ColorView.Color)
+        {
+            ColorChanged?.Invoke(this, new ColorChangedEventArgs(Color, ColorView.Color));
+            Color = ColorView.Color;
+        }
+    }
+
+    protected override void OnOpening()
+    {
+        base.OnOpening();
+        
+        ColorView.Color = Color;
+        var brush = new SolidColorBrush(Color);
+        ColorView.OriginalColor = brush;
+        ColorView.NewColor = brush;
+    }
+}

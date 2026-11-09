@@ -1,0 +1,11 @@
+# Generated build, publish, and test output
+/artifacts/
+[Bb]in/
+[Oo]bj/
+TestResults/
+
+# Local IDE and build state
+/.vs/
+/.tmp/
+*.user
+*.suo

@@ -1,0 +1,343 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fui="using:AvaloniaFluentUI.Controls">
+
+  <Style Selector="Window">
+    <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}" />
+    <Setter Property="Background" Value="{DynamicResource PortalBackgroundBrush}" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <Style Selector="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource PortalTextBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.H1">
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalTextBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.H2">
+    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <Style Selector="TextBlock.Caption">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalMutedBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Muted">
+    <Setter Property="Foreground" Value="{DynamicResource PortalMutedBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.Subtle">
+    <Setter Property="Foreground" Value="{DynamicResource PortalSubtleBrush}" />
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+
+  <Style Selector="TextBlock.Symbol">
+    <Setter Property="FontFamily" Value="{DynamicResource SymbolFontFamily}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="Padding" Value="13,6" />
+  </Style>
+
+  <Style Selector="Button.PrimaryButton">
+    <Setter Property="Background" Value="{DynamicResource PortalAccentBrush}" />
+    <Setter Property="Foreground" Value="White" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <Style Selector="Button.PrimaryButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PortalAccentDarkBrush}" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="Button.PrimaryButton:pressed /template/ ContentPresenter">
+    <Setter Property="Background" Value="#084578" />
+    <Setter Property="Foreground" Value="White" />
+  </Style>
+
+  <Style Selector="Button.PrimaryButton:disabled /template/ ContentPresenter">
+    <Setter Property="Background" Value="#C9D8E8" />
+    <Setter Property="Foreground" Value="#F5F8FB" />
+  </Style>
+
+  <Style Selector="Button.SecondaryButton">
+    <Setter Property="Background" Value="White" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalTextBrush}" />
+    <Setter Property="BorderBrush" Value="#D7DEE8" />
+    <Setter Property="BorderThickness" Value="1" />
+  </Style>
+
+  <Style Selector="Button.SecondaryButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#F6F9FC" />
+    <Setter Property="BorderBrush" Value="#B8C7D9" />
+  </Style>
+
+  <Style Selector="Button.GhostButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalMutedBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.GhostButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#EFF3F8" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalTextBrush}" />
+  </Style>
+
+  <Style Selector="Button.DangerGhostButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="#B42318" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.DangerGhostButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#FEF3F2" />
+    <Setter Property="Foreground" Value="#912018" />
+  </Style>
+
+  <Style Selector="Button.IconButton">
+    <Setter Property="Width" Value="34" />
+    <Setter Property="Height" Value="34" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="Button.IconButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#EFF3F8" />
+  </Style>
+
+  <Style Selector="Button.NavItem">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="11,0" />
+    <Setter Property="Margin" Value="0,1" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalTextBrush}" />
+  </Style>
+
+  <Style Selector="Button.NavItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#EDF2F8" />
+  </Style>
+
+  <Style Selector="Button.NavItem.active">
+    <Setter Property="Background" Value="{DynamicResource PortalAccentSoftBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalAccentDarkBrush}" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <Style Selector="Button.NavItem.active:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PortalAccentSoftBrush}" />
+  </Style>
+
+  <Style Selector="Button.QuickCard">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+
+  <Style Selector="Button.QuickCard:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#F7FAFD" />
+  </Style>
+
+  <Style Selector="Button.SearchResultItem">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Padding" Value="12,9" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="MinHeight" Value="42" />
+  </Style>
+
+  <Style Selector="Button.SearchResultItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#F1F6FC" />
+  </Style>
+
+  <Style Selector="Border.Card">
+    <Setter Property="Background" Value="White" />
+    <Setter Property="BorderBrush" Value="{DynamicResource PortalBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+
+  <Style Selector="Border.SoftPanel">
+    <Setter Property="Background" Value="#F8FAFC" />
+    <Setter Property="BorderBrush" Value="#E7ECF3" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="7" />
+  </Style>
+
+  <Style Selector="Border.Pill">
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TextBlock.FieldLabel">
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalMutedBrush}" />
+    <Setter Property="Margin" Value="0,0,0,5" />
+  </Style>
+
+  <Style Selector="TextBox">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <Style Selector="TextBox.FieldTextBox">
+    <Setter Property="Background" Value="#FBFCFE" />
+    <Setter Property="BorderBrush" Value="#DCE4ED" />
+  </Style>
+
+  <Style Selector="ComboBox">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="RowHeight" Value="38" />
+    <Setter Property="ColumnHeaderHeight" Value="36" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="#EDF1F5" />
+    <Setter Property="VerticalGridLinesBrush" Value="Transparent" />
+    <Setter Property="HeadersVisibility" Value="Column" />
+    <Setter Property="SelectionMode" Value="Single" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background" Value="#F7F9FC" />
+    <Setter Property="Foreground" Value="#475467" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Padding" Value="8,0" />
+    <Setter Property="BorderBrush" Value="#E9EEF4" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <Style Selector="DataGridCell">
+    <Setter Property="Padding" Value="10,0" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+
+  <Style Selector="DataGridRow">
+    <Setter Property="Background" Value="White" />
+  </Style>
+
+  <Style Selector="DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="#F5F9FE" />
+  </Style>
+
+  <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="#E8F2FC" />
+  </Style>
+
+  <Style Selector="Button.LinkButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="4,2" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalAccentBrush}" />
+    <Setter Property="MinHeight" Value="24" />
+  </Style>
+
+  <Style Selector="Button.LinkButton:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalAccentDarkBrush}" />
+  </Style>
+
+  <Style Selector="Button.TableAction">
+    <Setter Property="Background" Value="#EAF4FD" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Padding" Value="9,3" />
+    <Setter Property="MinHeight" Value="26" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalAccentDarkBrush}" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.TableAction:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="#D7E9FA" />
+    <Setter Property="Foreground" Value="{DynamicResource PortalAccentDarkBrush}" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed TextBlock.NavLabel">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed Border.NavLabel">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed TextBlock.NavSection">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed StackPanel.NavTextGroup">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <!--  Hide every auxiliary nav element, including the favourite Buttons and recent ItemsControl.  -->
+  <Style Selector="Window.nav-collapsed Border.NavHide">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed StackPanel.NavHide">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed Button.NavHide">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed ItemsControl.NavHide">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed TextBlock.NavHide">
+    <Setter Property="IsVisible" Value="False" />
+  </Style>
+
+  <Style Selector="Window.nav-collapsed Button.NavItem">
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="fui|TabView#BusinessTabs">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Height" Value="43" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="fui|TabView#BusinessTabs /template/ ContentPresenter#TabContentPresenter">
+    <Setter Property="IsVisible" Value="False" />
+    <Setter Property="Height" Value="0" />
+  </Style>
+
+  <Style Selector="fui|TabView#BusinessTabs fui|TabViewItem">
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+
+</Styles>

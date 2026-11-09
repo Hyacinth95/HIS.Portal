@@ -1,0 +1,282 @@
+<UserControl
+    x:Class="HIS.Portal.Modules.Outpatient.VisitListView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:contracts="using:HIS.Portal.Contracts"
+    xmlns:vm="using:HIS.Portal.Modules.Outpatient"
+    x:DataType="vm:VisitListViewModel"
+    Background="Transparent">
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Border
+        Grid.Row="0"
+        Padding="22,17,22,12"
+        Background="White"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="4">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Classes="H1" Text="门诊接诊" />
+            <Border
+                Margin="2,6,0,0"
+                Padding="8,3"
+                VerticalAlignment="Top"
+                Background="#EAF4FD"
+                CornerRadius="10">
+              <TextBlock FontSize="11" Foreground="#0F6CBD" Text="合成数据" />
+            </Border>
+          </StackPanel>
+          <TextBlock
+              Classes="Muted"
+              Text="按就诊号、患者、科室或医生筛选；单击仅选中，双击、Enter 或行内按钮打开详情。"
+              TextWrapping="Wrap" />
+        </StackPanel>
+        <StackPanel
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="8">
+          <TextBlock
+              Margin="0,0,6,0"
+              VerticalAlignment="Center"
+              Classes="Caption"
+              Text="{Binding LastRefreshText}" />
+          <Button Command="{Binding RefreshCommand}" Classes="SecondaryButton">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <PathIcon
+                  Width="14"
+                  Height="14"
+                  Data="{StaticResource IconRefresh}"
+                  Foreground="#475467" />
+              <TextBlock Text="刷新" />
+            </StackPanel>
+          </Button>
+          <Button
+              x:Name="OpenSelectedButton"
+              Command="{Binding OpenSelectedCommand}"
+              AutomationProperties.AutomationId="OpenSelectedButton"
+              AutomationProperties.Name="打开所选就诊详情"
+              Classes="PrimaryButton">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <PathIcon
+                  Width="14"
+                  Height="14"
+                  Data="{StaticResource IconArrowRight}"
+                  Foreground="White" />
+              <TextBlock Foreground="White" Text="打开详情" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border
+        Grid.Row="1"
+        Padding="22,12"
+        Background="#FBFCFE"
+        BorderBrush="#E7ECF3"
+        BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,*,Auto,150,*,Auto" ColumnSpacing="10">
+        <TextBlock
+            VerticalAlignment="Center"
+            Classes="Caption"
+            Text="筛选" />
+        <Grid Grid.Column="1" MinWidth="180">
+          <TextBox
+              x:Name="FilterSearchBox"
+              Padding="34,6,10,6"
+              AutomationProperties.AutomationId="VisitFilterSearch"
+              AutomationProperties.Name="接诊记录筛选"
+              Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+              PlaceholderText="搜索就诊号 / 患者 / 科室 / 医生" />
+          <PathIcon
+              Width="15"
+              Height="15"
+              Margin="11,0,0,0"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Center"
+              Data="{StaticResource IconSearch}"
+              Foreground="#667085"
+              IsHitTestVisible="False" />
+        </Grid>
+        <TextBlock
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Classes="Caption"
+            Text="状态" />
+        <ComboBox
+            x:Name="StatusFilterBox"
+            Grid.Column="3"
+            AutomationProperties.AutomationId="VisitStatusFilter"
+            AutomationProperties.Name="接诊状态筛选"
+            ItemsSource="{Binding StatusOptions}"
+            SelectedItem="{Binding SelectedStatus, Mode=TwoWay}" />
+        <TextBlock
+            Grid.Column="4"
+            VerticalAlignment="Center"
+            Classes="Caption"
+            Text="{Binding ResultSummary}"
+            TextTrimming="CharacterEllipsis" />
+        <Button
+            Grid.Column="5"
+            AutomationProperties.AutomationId="ClearFiltersButton"
+            AutomationProperties.Name="清除接诊筛选"
+            Command="{Binding ClearFiltersCommand}"
+            Classes="GhostButton"
+            Content="清除筛选" />
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="2" Margin="22,14,22,0">
+      <Border
+          x:Name="ListGridHost"
+          Background="White"
+          BorderBrush="#E3E8EF"
+          BorderThickness="1"
+          ClipToBounds="True"
+          CornerRadius="8">
+        <DataGrid
+            Name="VisitGrid"
+            AutoGenerateColumns="False"
+            AutomationProperties.AutomationId="VisitGrid"
+            AutomationProperties.Name="门诊接诊记录列表"
+            DoubleTapped="OnGridDoubleTapped"
+            HorizontalScrollBarVisibility="Auto"
+            IsReadOnly="True"
+            ItemsSource="{Binding VisibleVisits}"
+            SelectedItem="{Binding SelectedVisit, Mode=TwoWay}">
+          <DataGrid.Columns>
+            <DataGridTemplateColumn Width="82" Header="操作">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="contracts:VisitRecord">
+                  <Button
+                      Classes="TableAction"
+                      Click="OnRowOpenClick"
+                      Content="{Binding OpenActionLabel}"
+                      Tag="{Binding}"
+                      ToolTip.Tip="打开该就诊的详情标签" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn
+                Width="170"
+                Binding="{Binding VisitNo}"
+                Header="就诊号" />
+            <DataGridTextColumn
+                Width="92"
+                Binding="{Binding PatientName}"
+                Header="患者" />
+            <DataGridTextColumn
+                Width="128"
+                Binding="{Binding GenderAge}"
+                Header="性别 / 年龄" />
+            <DataGridTextColumn
+                Width="116"
+                Binding="{Binding Department}"
+                Header="就诊科室" />
+            <DataGridTextColumn
+                Width="108"
+                Binding="{Binding Doctor}"
+                Header="接诊医生" />
+            <DataGridTemplateColumn Width="96" Header="状态">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="contracts:VisitRecord">
+                  <Border
+                      Padding="8,2"
+                      HorizontalAlignment="Left"
+                      VerticalAlignment="Center"
+                      Background="#EAF4FD"
+                      CornerRadius="9">
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="#0F6CBD"
+                        Text="{Binding Status}" />
+                  </Border>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Width="96" Header="优先级">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate x:DataType="contracts:VisitRecord">
+                  <TextBlock
+                      VerticalAlignment="Center"
+                      FontSize="12"
+                      Foreground="#475467"
+                      Text="{Binding Priority}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn
+                Width="112"
+                Binding="{Binding AppointmentTime}"
+                Header="预约时间" />
+            <DataGridTextColumn
+                Width="2*"
+                Binding="{Binding ChiefComplaint}"
+                Header="主诉摘要" />
+          </DataGrid.Columns>
+        </DataGrid>
+      </Border>
+
+      <Border
+          Padding="28"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          Background="White"
+          BorderBrush="#E3E8EF"
+          BorderThickness="1"
+          CornerRadius="10"
+          IsVisible="{Binding IsEmpty}">
+        <StackPanel Width="280" Spacing="8">
+          <PathIcon
+              Width="28"
+              Height="28"
+              HorizontalAlignment="Center"
+              Data="{StaticResource IconSearch}"
+              Foreground="#667085" />
+          <TextBlock
+              HorizontalAlignment="Center"
+              FontSize="14"
+              FontWeight="SemiBold"
+              Text="没有匹配的接诊记录" />
+          <TextBlock
+              HorizontalAlignment="Center"
+              FontSize="11"
+              Foreground="#667085"
+              Text="尝试清空搜索关键字或切换状态筛选。"
+              TextWrapping="Wrap" />
+          <Button
+              Margin="0,4,0,0"
+              HorizontalAlignment="Center"
+              Command="{Binding ClearFiltersCommand}"
+              Classes="SecondaryButton"
+              Content="清除筛选" />
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <Grid
+        Grid.Row="3"
+        Margin="22,10,22,10"
+        ColumnDefinitions="*,Auto">
+      <StackPanel Orientation="Horizontal" Spacing="8">
+        <PathIcon
+            Width="13"
+            Height="13"
+            VerticalAlignment="Center"
+            Data="{StaticResource IconInfo}"
+            Foreground="#667085" />
+        <TextBlock
+            VerticalAlignment="Center"
+            Classes="Caption"
+            Text="单击选中；双击行、按 Enter 或点击行内按钮打开详情；每个就诊号对应独立、可去重的业务标签。" />
+      </StackPanel>
+      <TextBlock
+          Grid.Column="1"
+          VerticalAlignment="Center"
+          Classes="Caption"
+          Text="{Binding StatusSummary}" />
+    </Grid>
+  </Grid>
+</UserControl>

@@ -1,0 +1,141 @@
+<ResourceDictionary
+  xmlns="https://github.com/avaloniaui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:ui="using:AvaloniaFluentUI.Controls">
+
+  <Design.PreviewWith>
+    <Border
+      MinWidth="200"
+      MinHeight="100"
+      Background="#202020">
+      <ui:RangeSlider
+        Margin="20"
+        VerticalAlignment="Center"
+        IsEnabled="False"
+        RangeEnd="80"
+        RangeStart="20"/>
+    </Border>
+  </Design.PreviewWith>
+
+  <x:Double x:Key="RangeSliderTrackCornerRadius">2</x:Double>
+  <Thickness x:Key="RangeSliderToolTipPadding">4</Thickness>
+  <x:Double x:Key="RangeSliderToolTipFontSize">14</x:Double>
+  <x:Double x:Key="RangeSliderTrackThemeHeight">4</x:Double>
+
+  <ControlTheme
+    x:Key="RangeSliderThumbStyle"
+    BasedOn="{StaticResource SliderThumbStyle}"
+    TargetType="Thumb">
+    <Setter Property="Focusable" Value="True"/>
+  </ControlTheme>
+
+  <ControlTheme x:Key="{x:Type ui:RangeSlider}" TargetType="ui:RangeSlider">
+    <Setter Property="Background" Value="{DynamicResource ControlStrongFillColorDefaultBrush}"/>
+    <Setter Property="BorderThickness" Value="{DynamicResource SliderBorderThemeThickness}"/>
+    <Setter Property="Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+    <Setter Property="FontFamily" Value="{DynamicResource DefaultFontFamily}"/>
+    <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}"/>
+    <Setter Property="VerticalAlignment" Value="Top"/>
+    <Setter Property="Template">
+      <ControlTemplate>
+        <Panel Name="ControlGrid" Height="24">
+          <Border
+            Name="OutOfRangeContentContainer"
+            Margin="2,0"
+            Background="Transparent">
+            <Rectangle
+              Name="BackgroundElement"
+              Height="{DynamicResource RangeSliderTrackThemeHeight}"
+              Fill="{TemplateBinding Background}"
+              RadiusX="{DynamicResource RangeSliderTrackCornerRadius}"
+              RadiusY="{DynamicResource RangeSliderTrackCornerRadius}"/>
+          </Border>
+
+          <Canvas
+            Name="ContainerCanvas"
+            Margin="2,0"
+            Background="Transparent"
+            ClipToBounds="False">
+            <Rectangle
+              Name="PART_ActiveRectangle"
+              Height="{DynamicResource RangeSliderTrackThemeHeight}"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Center"
+              Fill="{TemplateBinding Foreground}"/>
+
+            <!--
+              Value tooltips shown while interacting. One Popup per thumb (same display mode as
+              ToolTipSlider): each follows its thumb via PlacementTarget and stays visible briefly
+              after the interaction ends. Both are shown together whenever a value changes.
+            -->
+            <Popup x:Name="PART_PopupMin" IsLightDismissEnabled="False">
+              <Border
+                Margin="{DynamicResource ControlDefaultBoxShadowsMargin}"
+                Padding="{DynamicResource ToolTipSliderPadding}"
+                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                BorderThickness="{DynamicResource ToolTipBorderThemeThickness}"
+                BoxShadow="{DynamicResource ControlDefaultBoxShadow}"
+                CornerRadius="{DynamicResource OverlayCornerRadius}">
+                <TextBlock
+                  x:Name="PART_ToolTipTextMin"
+                  Margin="{DynamicResource RangeSliderToolTipPadding}"
+                  FontSize="{DynamicResource RangeSliderToolTipFontSize}"
+                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+              </Border>
+            </Popup>
+            <Popup x:Name="PART_PopupMax" IsLightDismissEnabled="False">
+              <Border
+                Margin="{DynamicResource ControlDefaultBoxShadowsMargin}"
+                Padding="{DynamicResource ToolTipSliderPadding}"
+                Background="{DynamicResource AcrylicBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                BorderThickness="{DynamicResource ToolTipBorderThemeThickness}"
+                BoxShadow="{DynamicResource ControlDefaultBoxShadow}"
+                CornerRadius="{DynamicResource OverlayCornerRadius}">
+                <TextBlock
+                  x:Name="PART_ToolTipTextMax"
+                  Margin="{DynamicResource RangeSliderToolTipPadding}"
+                  FontSize="{DynamicResource RangeSliderToolTipFontSize}"
+                  Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+              </Border>
+            </Popup>
+
+            <Thumb
+              Name="PART_MinThumb"
+              Width="{DynamicResource SliderHorizontalThumbWidth}"
+              Height="{DynamicResource SliderHorizontalThumbHeight}"
+              VerticalAlignment="Center"
+              AutomationProperties.Name="Min thumb"
+              Focusable="True"
+              IsTabStop="True"
+              TabIndex="0"
+              Theme="{StaticResource RangeSliderThumbStyle}"/>
+            <Thumb
+              Name="PART_MaxThumb"
+              Width="{DynamicResource SliderHorizontalThumbWidth}"
+              Height="{DynamicResource SliderHorizontalThumbHeight}"
+              VerticalAlignment="Center"
+              AutomationProperties.Name="Max thumb"
+              Focusable="True"
+              IsTabStop="True"
+              TabIndex="1"
+              Theme="{StaticResource RangeSliderThumbStyle}"/>
+          </Canvas>
+        </Panel>
+      </ControlTemplate>
+    </Setter>
+
+    <Style Selector="^:disabled /template/ Rectangle#BackgroundElement">
+      <Setter Property="Fill" Value="{DynamicResource ControlStrongFillColorDisabledBrush}"/>
+    </Style>
+
+    <Style Selector="^:disabled /template/ Rectangle#PART_ActiveRectangle">
+      <Setter Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}"/>
+    </Style>
+
+    <Style Selector="^:disabled /template/ Thumb">
+      <Setter Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}"/>
+    </Style>
+  </ControlTheme>
+</ResourceDictionary>

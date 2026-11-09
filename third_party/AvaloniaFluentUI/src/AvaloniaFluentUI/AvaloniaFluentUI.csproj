@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Vendored, reproducible build copy of AvaloniaFluentUI 2.0.6.
+    Source: AvaClient/Avalonia-Fluent-UI @ 8cc9f01c1a16468fd11eeca179d2e2b0fc88ff24 (VERSION 2.0.6).
+    See third_party/AvaloniaFluentUI/PROVENANCE.md.
+
+    Deliberate differences from the upstream project file:
+    - The MicroComIdl item is not repeated. WinRT.Generated.cs is already checked into
+      FluentControls/Interop/WinRT and is compiled from the copy, so no MSBuild task writes
+      generated C# back into the upstream checkout or into this copy at build time.
+    - MicroCom.CodeGenerator.MSBuild (build-time only) and package-on-build are removed.
+    - Package versions are pinned locally instead of inheriting upstream central versions.
+    - SourceLink.props is kept beside this project for provenance and is not imported: this
+      copy is not a Git working tree, so importing SourceLink would add a checkout-dependent
+      build failure.
+  -->
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AvaloniaFluentUI</RootNamespace>
+    <AssemblyName>AvaloniaFluentUI</AssemblyName>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <EnableDefaultAvaloniaItems>false</EnableDefaultAvaloniaItems>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);NU1507;CS1591;CS0414;CS8618;CS8600;CS8601;CS8602;CS8603;CS8604;CS8620;CS8625;CS8765;CS8767;CS8605;CS8622;CS8629;CS0168;CS8619;CS8764;CS8766;CS8769</NoWarn>
+    <Version>2.0.6</Version>
+    <AssemblyVersion>2.0.6.0</AssemblyVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Skia" Version="12.1.2" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.2" />
+    <PackageReference Include="MicroCom.Runtime" Version="0.11.6" />
+  </ItemGroup>
+
+</Project>
+
+
